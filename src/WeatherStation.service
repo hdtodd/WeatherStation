@@ -1,0 +1,11 @@
+[Unit]
+Description=Weather Station service for Raspberry Pi
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/ws sql
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

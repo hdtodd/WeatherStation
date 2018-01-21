@@ -1,0 +1,59 @@
+/* Procedure to confirm that we have WeatherProbe ("wp") software running 
+   on the Arduino.  Loops with error message if we don't; return with no
+   value when we do 
+
+   A correctly-functioning probe will respond with "WP v<version #>"
+   when it receives a "WhoRU" query.
+*/
+
+#include <stdlib.h>
+#include <stdio.h>
+#include "rs232.h"
+#include "ws.h"
+
+boolean connectToWP(void) {
+  extern boolean keepReading;
+  extern int cport_nr;
+  unsigned char rbuf[4096];
+
+  // serial port settings
+  int bdrate=9600;                      // 9600 baud works, have used up to 115200
+  char serialMode[]={'8','N','1',0};
+
+  boolean haveWP = false;
+  int n=0, count=0;
+
+  if(RS232_OpenComport(cport_nr, bdrate, serialMode)) return(false);
+  sleep(2);                                    // let startup settle down
+
+  /* At this point, we have a serial port open, but we don't know what's at
+     the other end, and we don't know if we're using the same serial settings,
+     and we don't have the communication buffers are sync'd.  So we'll clear our
+     buffer, send a "who are you" query, and confirm that we're talking to 
+     each other correctly and in sync.
+  */
+
+
+  while (! haveWP ) {
+    if (! keepReading) exit(0);              // if ^C given at kbd, quit
+    RS232_PollComport(cport_nr, rbuf, 4095);   // clear buffer to start
+    RS232_SendBuf(cport_nr, "WhoRU\n", 6);     // ask who's there
+    count++;
+    sleep(1);
+    n = RS232_PollComport(cport_nr, rbuf, 4095);// get response
+    if (n>0) {
+      rbuf[n]=0;                             // make a NULL-terminated string
+      printf("%WS: WP response to WhoRU = %s\n", rbuf);
+      if ( (tolower(rbuf[0])=='w') && (tolower(rbuf[1])=='p') ) {
+          printf("%WS: confirmed that WP is connected, running %s\n", rbuf);
+          haveWP = true;
+	  }
+        else {
+	  printf("%WS: WP invalid response after %d tries\n", count);
+	};
+    }
+    else {
+      printf("%WS: empty buffer after %d sec\n", count-1);
+    }; 
+  };
+};

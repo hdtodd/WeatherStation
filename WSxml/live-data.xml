@@ -1,0 +1,274 @@
+<?xml version="1.0" ?>
+<!DOCTYPE samples SYSTEM "weather_data.dtd">
+<samples>
+<sample>
+<date_time>'2017-09-01 12:53:08'</date_time>
+<MPL3115A2>
+<mpl_press p_unit="Pa">85266</mpl_press>
+<mpl_temp t_scale="F">73.9</mpl_temp>
+</MPL3115A2>
+<DHT22>
+<dht_temp t_scale="F">74.1</dht_temp>
+<dht_rh unit="%">26</dht_rh>
+</DHT22>
+<DS18>
+<ds18_lbl>IN</ds18_lbl>
+<ds18_temp t_scale="F">72.5</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>OU</ds18_lbl>
+<ds18_temp t_scale="F">72.1</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+</sample>
+<sample>
+<date_time>'2017-09-01 12:58:19'</date_time>
+<MPL3115A2>
+<mpl_press p_unit="Pa">85255</mpl_press>
+<mpl_temp t_scale="F">74.0</mpl_temp>
+</MPL3115A2>
+<DHT22>
+<dht_temp t_scale="F">74.3</dht_temp>
+<dht_rh unit="%">26</dht_rh>
+</DHT22>
+<DS18>
+<ds18_lbl>IN</ds18_lbl>
+<ds18_temp t_scale="F">72.5</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>OU</ds18_lbl>
+<ds18_temp t_scale="F">72.5</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+</sample>
+<sample>
+<date_time>'2017-09-01 13:03:30'</date_time>
+<MPL3115A2>
+<mpl_press p_unit="Pa">85256</mpl_press>
+<mpl_temp t_scale="F">74.2</mpl_temp>
+</MPL3115A2>
+<DHT22>
+<dht_temp t_scale="F">74.5</dht_temp>
+<dht_rh unit="%">26</dht_rh>
+</DHT22>
+<DS18>
+<ds18_lbl>IN</ds18_lbl>
+<ds18_temp t_scale="F">73.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>OU</ds18_lbl>
+<ds18_temp t_scale="F">72.5</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+</sample>
+<sample>
+<date_time>'2017-09-01 13:08:41'</date_time>
+<MPL3115A2>
+<mpl_press p_unit="Pa">85255</mpl_press>
+<mpl_temp t_scale="F">74.3</mpl_temp>
+</MPL3115A2>
+<DHT22>
+<dht_temp t_scale="F">74.7</dht_temp>
+<dht_rh unit="%">26</dht_rh>
+</DHT22>
+<DS18>
+<ds18_lbl>IN</ds18_lbl>
+<ds18_temp t_scale="F">73.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>OU</ds18_lbl>
+<ds18_temp t_scale="F">73.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+</sample>
+<sample>
+<date_time>'2017-09-01 13:13:52'</date_time>
+<MPL3115A2>
+<mpl_press p_unit="Pa">85250</mpl_press>
+<mpl_temp t_scale="F">74.3</mpl_temp>
+</MPL3115A2>
+<DHT22>
+<dht_temp t_scale="F">74.7</dht_temp>
+<dht_rh unit="%">26</dht_rh>
+</DHT22>
+<DS18>
+<ds18_lbl>IN</ds18_lbl>
+<ds18_temp t_scale="F">73.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>OU</ds18_lbl>
+<ds18_temp t_scale="F">73.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+</sample>
+<sample>
+<date_time>'2017-09-01 13:19:03'</date_time>
+<MPL3115A2>
+<mpl_press p_unit="Pa">85239</mpl_press>
+<mpl_temp t_scale="F">74.4</mpl_temp>
+</MPL3115A2>
+<DHT22>
+<dht_temp t_scale="F">74.8</dht_temp>
+<dht_rh unit="%">26</dht_rh>
+</DHT22>
+<DS18>
+<ds18_lbl>IN</ds18_lbl>
+<ds18_temp t_scale="F">73.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>OU</ds18_lbl>
+<ds18_temp t_scale="F">73.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+</sample>
+<sample>
+<date_time>'2017-09-01 13:24:14'</date_time>
+<MPL3115A2>
+<mpl_press p_unit="Pa">85238</mpl_press>
+<mpl_temp t_scale="F">74.5</mpl_temp>
+</MPL3115A2>
+<DHT22>
+<dht_temp t_scale="F">74.8</dht_temp>
+<dht_rh unit="%">26</dht_rh>
+</DHT22>
+<DS18>
+<ds18_lbl>IN</ds18_lbl>
+<ds18_temp t_scale="F">73.4</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>OU</ds18_lbl>
+<ds18_temp t_scale="F">73.9</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+</sample>
+<sample>
+<date_time>'2017-09-01 13:29:25'</date_time>
+<MPL3115A2>
+<mpl_press p_unit="Pa">85228</mpl_press>
+<mpl_temp t_scale="F">74.6</mpl_temp>
+</MPL3115A2>
+<DHT22>
+<dht_temp t_scale="F">75.0</dht_temp>
+<dht_rh unit="%">26</dht_rh>
+</DHT22>
+<DS18>
+<ds18_lbl>IN</ds18_lbl>
+<ds18_temp t_scale="F">73.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>OU</ds18_lbl>
+<ds18_temp t_scale="F">73.9</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+</sample>
+<sample>
+<date_time>'2017-09-01 13:34:36'</date_time>
+<MPL3115A2>
+<mpl_press p_unit="Pa">85224</mpl_press>
+<mpl_temp t_scale="F">74.8</mpl_temp>
+</MPL3115A2>
+<DHT22>
+<dht_temp t_scale="F">75.0</dht_temp>
+<dht_rh unit="%">26</dht_rh>
+</DHT22>
+<DS18>
+<ds18_lbl>IN</ds18_lbl>
+<ds18_temp t_scale="F">73.4</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>OU</ds18_lbl>
+<ds18_temp t_scale="F">73.4</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+</sample>
+<sample>
+<date_time>'2017-09-01 13:39:47'</date_time>
+<MPL3115A2>
+<mpl_press p_unit="Pa">85227</mpl_press>
+<mpl_temp t_scale="F">74.8</mpl_temp>
+</MPL3115A2>
+<DHT22>
+<dht_temp t_scale="F">75.0</dht_temp>
+<dht_rh unit="%">26</dht_rh>
+</DHT22>
+<DS18>
+<ds18_lbl>IN</ds18_lbl>
+<ds18_temp t_scale="F">73.4</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>OU</ds18_lbl>
+<ds18_temp t_scale="F">73.4</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+<DS18>
+<ds18_lbl>**</ds18_lbl>
+<ds18_temp t_scale="F">00.0</ds18_temp>
+</DS18>
+</sample>
+</samples>

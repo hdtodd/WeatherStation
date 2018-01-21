@@ -1,0 +1,26 @@
+<!ELEMENT samples (sample*)> 
+<!ELEMENT sample (source_loc?, date_time, MPL3115A2?, DHT22?, DS18*) >
+<!ELEMENT source_loc (#PCDATA) >
+<!ELEMENT date_time (#PCDATA) >
+<!ELEMENT MPL3115A2 (mpl_alt?, mpl_press, mpl_temp) > 
+  <!ELEMENT mpl_alt (#PCDATA) >
+     <!ATTLIST mpl_alt
+        alt_unit (ft|m) "m">
+  <!ELEMENT mpl_press (#PCDATA) >
+     <!ATTLIST mpl_press
+	p_unit (Pa|mb|inHg) "Pa" >
+  <!ELEMENT mpl_temp (#PCDATA) >
+     <!ATTLIST mpl_temp
+	t_scale (C|F|K) "F">
+<!ELEMENT DHT22 (dht_temp, dht_rh) >
+   <!ELEMENT dht_temp (#PCDATA) >
+     <!ATTLIST dht_temp
+	t_scale (C|F|K) "F">
+   <!ELEMENT dht_rh (#PCDATA) >
+     <!ATTLIST dht_rh
+	unit CDATA #IMPLIED>
+<!ELEMENT DS18 (ds18_lbl, ds18_temp) >
+   <!ELEMENT ds18_lbl (#PCDATA) >
+   <!ELEMENT ds18_temp (#PCDATA) >
+     <!ATTLIST ds18_temp
+        t_scale (C|F|K) "F">
