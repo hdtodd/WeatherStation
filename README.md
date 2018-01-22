@@ -1,6 +1,6 @@
 # <center>WeatherStation</center>
 ### <center>A Raspberry Pi Weather Datalogger </br>with Arduino WeatherProbe Data Collector</center>
-<center>Written by [David Todd](hdtodd@gmail.com)</br>
+<center>Written by David Todd(hdtodd@gmail.com)</br>
 August 2015-January 2018, Bozeman MT/Williston VT</center>
 </br></br>
 This project implements a weather data logging system comprised of:
@@ -28,5 +28,5 @@ is compiled on the Pi or OSX and downloaded over USB cable to the Uno (which als
 receives its power from the USB cable).  The Pi or OSX issues commands to the Uno
 and receives data in return, which is then displayed to the user or stored in a database.
 
-The included PHP and Python files offer prototypes for displaying data collected in the database (in sqlite3 format in this case).
+The included PHP and Python files offer prototypes for displaying data collected in the database (in sqlite3 format in this case) and/or presenting via an Apache2 server.
 
