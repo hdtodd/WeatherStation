@@ -1,8 +1,8 @@
 # <center>WeatherStation</center>
 ### <center>A Raspberry Pi Weather Datalogger </br>with Arduino WeatherProbe Data Collector</center>
 <center>Written by [David Todd](hdtodd@gmail.com)</br>
-August 2015-September 2017, Bozeman MT/Williston VT</center>
-
+August 2015-January 2018, Bozeman MT/Williston VT</center>
+</br>
 This project implements a weather data logging system comprised of:
 
 1.  a Raspberry Pi program to collect meteorological data from an attached Arduino probe and 
