@@ -13,8 +13,8 @@ labeled data fields, or print out or store as XML-formatted data;
   * MPL3115A altimeter/barometric pressure/temperature sensor
   * DHT22 temperature/relative humidity sensor
   * DS18-class temperature probes (zero or multiple)
-  * Chronodot real-time clock for date/time stamping
-  * Arduino code to display data on a 1.8" TFT display.
+  * (Optional) Chronodot real-time clock for date/time stamping
+  * (Optional) Arduino code to display data on a 1.8" TFT display.
 
 4.  A <tt>Makefile</tt> to create and install the Raspberry Pi code, including a <tt>systemctl WeatherStation.service</tt> file for automatic operation upon reboot;
 
