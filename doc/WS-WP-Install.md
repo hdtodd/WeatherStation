@@ -1,5 +1,5 @@
 #<center>WeatherProbe/WeatherStation</br>Installation Guide
-###<center>[H. David Todd](hdtodd@gmail.com), September, 2017</center></br>
+###<center>[H. David Todd](hdtodd@gmail.com), January, 2018</center></br>
 
 *WeatherProbe* (WP) is a program that runs on the Arduino single-board microcontroller to read data from various meterological sensors and display current conditions on a connected TFT LCD display, if there is one connected.  *WeatherStation* (WS) is a program that runs on the Raspberry Pi or other Linux/Macintosh system to collect that meterological data from WP and to store and report or present it via web page. They are the Arduino and Raspberry Pi (or "Pi" for short) software components, respectively, of a meterological station *system*. They work together to collect+display (Arudino) and record+present (Pi) meterological data from a set of sensors connected to the Arduino. This document describes the installation of the programs and some of the compilation parameters that can be used to tailor their operation.
 
@@ -26,22 +26,22 @@ Even if you don't have or don't intend to install the various devices WP is prep
 
 Here are the steps:
 
-1. Install the Arduino IDE if you don't have it: `sudo apt-get update` then `sudo apt-get install arduino arduino-core arduino-mk`.
+1. Install the Arduino IDE and `make` tools if you don't have them: `sudo apt-get update` then `sudo apt-get install arduino arduino-core arduino-mk`.
 1. Connect your Arduino to your Raspberry Pi with a USB cable.  Start the Arduino IDE by double-clicking the Arduino icon.  Load one of the example programs, e.g., 'blink', and test it to make sure you have a working Arduino IDE environment that can compile and link code and upload it to the Arduino.
 1. Set the baud rate for your USB serial interface to 9600 (else you'll need to change the speed in the WP code); 9600 seems fast enough to work with but slow enough for the serial interface to be reliable.
 1. You may find it helpful to use a terminal emulation program to connect your host system to the Arduino via the USB serial line for testing purposes.  `screen` should work just fine if you have experience with it, and `make monitor` from the Weather_Probe directory invokes `screen` as a terminal connection to the Arduino.  However, I had trouble getting `screen` to communicate well, and I found that `minicom` also works well for this purpose.  It's easy to install: `sudo apt-get update` then `sudo apt-get install minicom`.  But see the Appendix for configuration information, especially changing the line-termination character (which may have been my unresolved problem with `screen`).
 1. If you don't already have an Arduino directory under your account, create one and connect to it: `mkdir ~/Arduino; cd ~/Arduino`.  Then `mkdir libraries`.
-1. Download and unpack into `~/Arduino` the WeatherStation package from Github. Go to `https://github.com/hdtodd/Weather_Station` to do a `git clone` or with your browser to obtain the zip file, `Weather_Station.zip`.  If you downloaded the zip file, unzip it.
-1. If not already installed, install the Arduino TFT library (`https://www.arduino.cc/en/Guide/TFT` for details).  This installs the  Adafruit GFX and Adafruit ST7735 libraries extended for the Arduino TFT display.
-1  If not already installed, install the Arduino SPI library (`https://www.arduino.cc/en/Reference/SPI` for details).
-1. Download and install via IDE or unpack into `/usr/share/arduino/libraries` the OneWire package from `https://github.com/PaulStoffregen/OneWire`.
-1. Download and install via IDE or unpack into `/usr/share/arduino/libraries` the I2C package from `https://github.com/rambo/I2C`.
-1. Download and install via IDE or unpack into `/usr/share/arduino/libraries` the DHT package from `https://github.com/adafruit/DHT-sensor-library`.
-1. Download and install via IDE or unpack into `~/Arduino/libraries` the ChronodotI2C package from `https://github.com/hdtodd/ChronodotI2C`.
-1. Download and install via IDE or unpack into `~/Arduino/libraries` the DS18 package from `https://github.com/hdtodd/DS18`.
-1. Download and install via IDE or unpack into `~/Arduino/libraries` the MPL3115A2 package from `https://github.com/hdtodd/MPL3115A2`
-1. If your Arduino is something other than a Uno, go to `~/Arduino/Weather_Station/src/Weather_Probe` and edit the `Makefile` entry for `BOARD_TAG` to be your model of Arduino.  See Appendix for my functioning `Makefile`.
-1. `cd ~/Arduino/Weather_Station/src` and `make`.  The WP code will be compiled, linked, and uploaded to the Arduino.  If a TFT LCD display is connected to the Arduino, it will begin displaying current time and conditions.  The WS code will be compiled and linked, resulting in an executable program, `ws` in the `src` directory.
+1. Download and unpack into `~/Arduino` the WeatherStation package from Github. Go to [https://github.com/hdtodd/WeatherStation]() to do a `git clone` or with your browser to obtain the zip file, `WeatherStation.zip`, and unzip it into your `~/Arduino` directory.
+1. If not already installed, install the Arduino TFT library (see [https://www.arduino.cc/en/Guide/TFT]() for details).  This installs the  Adafruit GFX and Adafruit ST7735 libraries extended for the Arduino TFT display.
+1.  If not already installed, install the Arduino SPI library (see [https://www.arduino.cc/en/Reference/SPI]() for details).
+1. Download and install via IDE or unpack into `/usr/share/arduino/libraries` the OneWire package from [https://github.com/PaulStoffregen/OneWire]().
+1. Download and install via IDE or unpack into `/usr/share/arduino/libraries` the I2C package from [https://github.com/rambo/I2C]().
+1. Download and install via IDE or unpack into `/usr/share/arduino/libraries` the DHT package from [https://github.com/adafruit/DHT-sensor-library]().
+1. Download and install via IDE or unpack into `~/Arduino/libraries` the ChronodotI2C package from [https://github.com/hdtodd/ChronodotI2C]().
+1. Download and install via IDE or unpack into `~/Arduino/libraries` the DS18 package from [https://github.com/hdtodd/DS18]().
+1. Download and install via IDE or unpack into `~/Arduino/libraries` the MPL3115A2 package from [https://github.com/hdtodd/MPL3115A2]().
+1. If your Arduino is something other than a Uno, go to `~/Arduino/WeatherStation/src/Weather_Probe` and edit the `Makefile` entry for `BOARD_TAG` to be your model of Arduino.  See Appendix for my functioning `Makefile`.
+1. `cd ~/Arduino/WeatherStation/src` and `make`.  The WP code will be compiled, linked, and uploaded to the Arduino.  If a TFT LCD display is connected to the Arduino, it will begin displaying current time and conditions.  The WS code will be compiled and linked, resulting in an executable program, `ws` in the `src` directory.
 
 
 #Overview
