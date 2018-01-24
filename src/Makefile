@@ -14,7 +14,8 @@
 #	USE_MYSQL=1 make 
 #
 
-PROJ =	 ws
+MAKE    = /usr/bin/make
+PROJ    = ws
 BINPATH = /usr/local/bin/
 #  'escaped' version of BINPATH for use in sed command
 EBINPATH = \/usr\/local\/bin\/
@@ -65,6 +66,8 @@ all: ${PROJ}
 ${PROJ}: ${OBJS} 
 	echo "Making " ${DBTYPE} " version of WeatherStation"
 	$(CC) -o $@ $(LDFLAGS) ${OBJS} $(LIBS)
+	echo "Making WeatherProbe"
+	$(MAKE) -C ../WP
 
 install:
 #	Create the database directory if necessary, and
@@ -125,19 +128,30 @@ install:
 #	This entry goes just before the "exit 0" statement at the end
 
 clean:
+	echo "Cleaning WeatherStation debris"
 	rm -f *.o *~ ${PROJ}
+	echo "Cleaning WeatherProbe debris"
+	$(MAKE) -C ../WP clean
 
 really-clean:
+	echo "Cleaning WeatherStation debris"
 	rm -f *.o *~ ${PROJ} ${BINPATH}${PROJ}
 	sed -i -e '/${PROJ} &/d' ${RCLOCAL}
+	echo "Cleaning WeatherProbe debris"
+	$(MAKE) -C ../WP clean
 
 #WARNING: this one deletes the database file!
 scrupulously-clean:
+	echo "Cleaning WeatherStation debris and system files"
 	/bin/rm -f *~ *.o  $(PROJ) ${BINPATH}${PROJ} ${DBPATH}${DBNAME}
 	sed -i -e '/${PROJ} &/d' ${RCLOCAL}
+	echo "Cleaning WeatherProbe debris"
+	$(MAKE) -C ../WP clean
+
 
 uninstall:
 #  First, remove the system init startup code
+	echo "Removing system startup files and WeatherStation construction debris"
 	if [ `systemctl is-system-running` = "running" ]; then \
 		if [ `systemctl is-active WeatherStation` = "active" ] ; then \
 			systemctl stop WeatherStation.service ; \
