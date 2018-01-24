@@ -1,13 +1,13 @@
 #<center>WeatherProbe/WeatherStation</br>Installation Guide
 ###<center>[H. David Todd](hdtodd@gmail.com), January, 2018</center></br>
 
-*WeatherProbe* (WP) is a program that runs on the Arduino single-board microcontroller to read data from various meterological sensors and display current conditions on a connected TFT LCD display, if there is one connected.  *WeatherStation* (WS) is a program that runs on the Raspberry Pi or other Linux/Macintosh system to collect that meterological data from WP and to store and report or present it via web page. They are the Arduino and Raspberry Pi (or "Pi" for short) software components, respectively, of a meterological station *system*. They work together to collect+display (Arudino) and record+present (Pi) meterological data from a set of sensors connected to the Arduino. This document describes the installation of the programs and some of the compilation parameters that can be used to tailor their operation.
+*WeatherProbe* (WP) is a program that runs on the Arduino single-board microcontroller to read data from various meterological sensors and display current conditions on a TFT LCD display, if one is connected.  *WeatherStation* (WS) is a program that runs on the Raspberry Pi or other Linux/Macintosh system to collect that meterological data from WP and to store and report or present it via web page. They are the Arduino and Raspberry Pi (or "Pi" for short) software components, respectively, of a meterological station *system*. They work together to collect+display (Arudino) and record+present (Pi) meterological data from a set of sensors connected to the Arduino. This document describes the installation of the programs and some of the compilation parameters that can be used to tailor their operation.
 
 #Quickstart
 
 After all of the software components have been installed and the Arduino has been connected to the Pi, a simple `make; sudo make install` will cause the system to begin collecting meteorlogical data into a sqlite3 table `ProbeData`, in the file `/var/databases/WeatherData.db`.
 
-The system will collect data even if you have no sensors, no TFT display, and no real-time-clock connected to the Arduino!  You'll get records with a date-time stamp based on the date-time of your controllin Pi and with zeros for the rest of the data.  That's an easy way to test your software setup before wiring in sensors.  Then power-off and add the sensors, display, or RTC that you do have available and restart: the system will append real data to your database table.
+The system will collect data even if you have no sensors, no TFT display, and no real-time-clock connected to the Arduino!  You'll get records with a date-time stamp based on the date-time of your controlling Pi and with zeros for the rest of the data.  That's an easy way to test your software setup before you wire in sensors.  Then power-off and add the sensors, display, or real-time clock that you do have available and restart: the system will append real data to your database table.
 
 You can check that the data are being collected with the commands:
 
@@ -22,29 +22,45 @@ You can check that the data are being collected with the commands:
 
 If you installed the file `/var/www/index.php` **being careful not to overwrite any current index.php file there!** and if Apache2 is running, you can point your web browser to your host computer to see current conditions and (after a period of time to collect data) a graphical representation of the last week of temperature and barometric pressure.
 
-Even if you don't have or don't intend to install the various devices WP is prepared to support, you'll need to download the libraries in order to compile WP.  Unavailable devices are ignored in operation.  
+Even if you don't have or don't intend to install the various devices WP is prepared to support, you'll need to download and compile in the libraries in order to compile WP.  Unavailable devices are ignored during operation.  
+
+The installation below is tailored for a new installation of Raspbian Stretch 4.9.59 running Arduino 2.1.0.5, but WP/WS was developed on and is known to run on Jessie and earlier versions of Arduino compiler tools.  However, if you have customized the Arduino development environment from the standard IDE installation, you may need to change some configuration parameters (particulary in WP's `Makefile` -- see Appendix).  
 
 Here are the steps:
 
-1. Install the Arduino IDE and `make` tools if you don't have them: `sudo apt-get update` then `sudo apt-get install arduino arduino-core arduino-mk`.
-1. Connect your Arduino to your Raspberry Pi with a USB cable.  Start the Arduino IDE by double-clicking the Arduino icon.  Load one of the example programs, e.g., 'blink', and test it to make sure you have a working Arduino IDE environment that can compile and link code and upload it to the Arduino.
+1. Install the Arduino IDE and `make` tools if they're not already installed: `sudo apt-get update` then `sudo apt-get install arduino arduino-core arduino-mk`.  (For more information about arduino-mk, see [http://hardwarefun.com/tutorials/compiling-arduino-sketches-using-makefile]() , particularly "Global Variables".)
+1. Connect your Arduino to your Raspberry Pi with a USB cable.  Start the Arduino IDE by double-clicking the Arduino icon.  Load one of the example programs, e.g., `blink` (click through the sequence `File/Examples/01 Basics/Blink`) and test it to make sure you have a working Arduino IDE environment that can compile and link code and upload it to the Arduino.  You may need to click through the sequence `Tools/Board` and `Tools/Serial` to select your model of Arduino and your USB serial interface.
 1. Set the baud rate for your USB serial interface to 9600 (else you'll need to change the speed in the WP code); 9600 seems fast enough to work with but slow enough for the serial interface to be reliable.
-1. You may find it helpful to use a terminal emulation program to connect your host system to the Arduino via the USB serial line for testing purposes.  `screen` should work just fine if you have experience with it, and `make monitor` from the Weather_Probe directory invokes `screen` as a terminal connection to the Arduino.  However, I had trouble getting `screen` to communicate well, and I found that `minicom` also works well for this purpose.  It's easy to install: `sudo apt-get update` then `sudo apt-get install minicom`.  But see the Appendix for configuration information, especially changing the line-termination character (which may have been my unresolved problem with `screen`).
-1. If you don't already have an Arduino directory under your account, create one and connect to it: `mkdir ~/Arduino; cd ~/Arduino`.  Then `mkdir libraries`.
-1. Download and unpack into `~/Arduino` the WeatherStation package from Github. Go to [https://github.com/hdtodd/WeatherStation]() to do a `git clone` or with your browser to obtain the zip file, `WeatherStation.zip`, and unzip it into your `~/Arduino` directory.
-1. If not already installed, install the Arduino TFT library (see [https://www.arduino.cc/en/Guide/TFT]() for details).  This installs the  Adafruit GFX and Adafruit ST7735 libraries extended for the Arduino TFT display.
-1.  If not already installed, install the Arduino SPI library (see [https://www.arduino.cc/en/Reference/SPI]() for details).
-1. Download and install via IDE or unpack into `/usr/share/arduino/libraries` the OneWire package from [https://github.com/PaulStoffregen/OneWire]().
-1. Download and install via IDE or unpack into `/usr/share/arduino/libraries` the I2C package from [https://github.com/rambo/I2C]().
-1. Download and install via IDE or unpack into `/usr/share/arduino/libraries` the DHT package from [https://github.com/adafruit/DHT-sensor-library]().
-1. Download and install via IDE or unpack into `~/Arduino/libraries` the ChronodotI2C package from [https://github.com/hdtodd/ChronodotI2C]().
-1. Download and install via IDE or unpack into `~/Arduino/libraries` the DS18 package from [https://github.com/hdtodd/DS18]().
-1. Download and install via IDE or unpack into `~/Arduino/libraries` the MPL3115A2 package from [https://github.com/hdtodd/MPL3115A2]().
-1. If your Arduino is something other than a Uno, go to `~/Arduino/WeatherStation/src/Weather_Probe` and edit the `Makefile` entry for `BOARD_TAG` to be your model of Arduino.  See Appendix for my functioning `Makefile`.
-1. `cd ~/Arduino/WeatherStation/src` and `make`.  The WP code will be compiled, linked, and uploaded to the Arduino.  If a TFT LCD display is connected to the Arduino, it will begin displaying current time and conditions.  The WS code will be compiled and linked, resulting in an executable program, `ws` in the `src` directory.
+1. The Arduino IDE comes with a number of libraries, and you'll need the TFT and SPI libraries it provides.  You can confirm their presence by clicking through `Sketch/Import Library` and confirm that TFT and SPI are listed on the dropdown list.  If they are not already installed, install them (see [https://www.arduino.cc/en/Guide/TFT]() and [https://www.arduino.cc/en/Reference/SPI]() for details). 
+1. After starting the IDE and testing your Pi-Arduino connection, the Arduino IDE should have created a `~/sketchbook` directory under your `$HOME` directory.  You need to make sure there's a personal library directory there, too:  `mkdir ~/sketchbook/libraries`.
+1. You can exit the Arduino IDE now (leaving it running may cause "multiple definition" errors during later compilations).
+1. Install sqlite3 and development environment: `sudo apt-get install sqlite3 libsqlite3-dev`
+1. You may find it helpful to use a terminal emulation program to connect your host system to the Arduino via the USB serial line for testing purposes.  `screen` should work just fine if you have experience with it, and `make monitor` from the `.../WP` directory invokes `screen` as a terminal connection to the Arduino.  However, I had trouble getting `screen` to communicate well, and I found that `minicom` also works well for this purpose.  It's easy to install: `sudo apt-get update` then `sudo apt-get install minicom`.  But see the Appendix for configuration information, especially changing the line-termination character (which may have been my unresolved problem with `screen`).
+1. Clone into `~/sketchbook` the WeatherStation package from Github: 
+	* `cd ~/sketchbook`
+	* `git clone https://github.com/hdtodd/WeatherStation`
+1. Clone into `/usr/share/arduino/libraries` the various external library packages WP uses:
+	* `cd /usr/share/arduino/libraries`
+	* `sudo clone https://github.com/PaulStoffregen/OneWire`
+	* `sudo clone https://github.com/rambo/I2C`
+	* `sudo clone https://github.com/adafruit/DHT-sensor-library DHT`  (the IDE complains about the "-"'s if you leave off "DHT").  Then `sudo rm DHT/DHT-U*` as we don't use the universal package and it requires other libraries.
+1. Clone into your personal Arduino library the library packages developed for the WP program:
+	* `cd ~/sketchbook/libraries`
+	* `clone https://github.com/hdtodd/ChronodotI2C`
+	* `clone https://github.com/hdtodd/DS18`
+	* `clone https://github.com/hdtodd/MPL3115A2`
+1. If your Arduino is something other than a Uno, `nano ~/sketchbook/WeatherStation/WP/Makefile` to edit the `Makefile` entry for `BOARD_TAG` to be your model of Arduino.  See Appendix for my functioning `Makefile`.
+1. Compile, upload, and start the Weatherstation and WeatherProbe as services:
+	* `cd ~/Arduino/WeatherStation/src`
+	* `make`
+	* `sudo make install`</br>
+The WS and WP code will be compiled; the WS code will be installed in `/usr/local/bin`; the `WeatherStation.service` file will be installed and enabled and started on the Pi; and the WP code will be uploaded to the Arduino.  If a TFT LCD display is connected to the Arduino, it will begin displaying current time and conditions.  The WS program will begin collecting data and storing into `/var/databases/WeatherData.db`.
+1. To avoid destroying a functioning web site, the installation procedure does not automatically install the PHP code needed by Apache2 to display accumulated weather data.  Read the `WeatherStation/src/Makefile` for instructions for manual installation.
 
 
 #Overview
+
+##WeatherProbe (WP)
 
 WeatherProbe is an Arduino .ino program -- essentially C++ with some constraints and with support for the Arduino devices.  WeatherStation is a C program.  Both programs are compiled and linked on the host system.  
 
@@ -53,8 +69,28 @@ The "host" is referenced here as a Raspberry Pi, but it could be any other Linux
 
 The Arduino program is compiled and linked on the host to create a binary file that is executable by the Arduino.  The Arduino binary code is uploaded to the Arduino over the USB serial port *and stays resident and active until replaced, even through power cycling*.
 
+WP supports several devices, but if any are absent, WP collects and reports data from whatever sensors it *does* see.  In particular, WP will use a Chronodot real-time clock (1307-based RTC) if one is installed. But if no Chronodot is present, WP will use the Arduino's internal timer, with current date-time set by command from the controlling computer.  As a result, WP will operate and present results (with zeros for missing sensors) with no connected devices.
 
-#Database Options
+WP's expectations for wiring connections to various sensors is documented in the `WP.h` file.  That file also documents other parameters that might be changed, such as the time between updates to the TFT display or the number of DS18 thermal sensor (if you need more than 4).  If you use the Fritzing diagram for connecting sensors, TFT, and clock to the Arduino, no changes in parameters are needed.
+
+There are no compilation options for WP with regard to sensors.  Library code for all supported sensors is compiled into the base code.  At startup, WP tests for the presence of the various sensors and uses that list to determine which ones to sample periodically.
+
+If you want to compile and upload the WP code into the Arduino without running WeatherStation:
+
+* `cd WeatherStation/WP`
+* `make`
+* `make upload; minicom`
+
+assuming that you're using `minicom` for communication between your host Pi and the probe.  Once the code is uploaded, it will announce itself over the USB connection, inform you of any missing sensors, and then await commands over the USB port.  `?` or `help` will give a list of commands to try.  A simple example would be to type `report` and then `sample` to show you the datetime stamp and readings from any connected sensors.  WP does not support editing of command lines typed, so you can't correct typing mistakes.  Just press RETURN and start a new command line.
+
+##WeatherStation (WS)
+
+The file `WS.h` documents parameters you might want to change to affect the routine operation of WS, such as the frequency of collection of data from the probe.  
+
+The most significant compilation option for WS is the choice of database for storing the collected data. In operation, the probe can be commanded to present its results in a labeled-text report style, as a comma-separated-variable (CSV) string suitable for processing into spreadsheets or SQL databases, or in XML format.  WeatherStation commands WP to present data in CSV format and then stores the results into a SQL database.  In the distributed version of WS, you can choose to use either sqlite3 or MySQL as the database for storage.
+
+
+###Database Options
 
 WS can record the date-time stamped sample data it receives from WP in either a sqlite3 (default) or MySQL database.  
 
@@ -131,17 +167,23 @@ At this point, you'll have an empty table, `ProbeData`, in a database `weather` 
 
 But if you've compiled WS with the MySQL username/password set and using the `make` commands `make clean; USE_MYSQL=1 make`, you're ready for operation.  
 
-</br>**Either SQL Option**</br>
+</br>**Both SQL Options**</br>
 
 Whether you've chosen to run with sqlite3 or with MySQL, if you start WS with `sudo ./ws sql`, it will now append the meterological data it receives from the Arduino WP program to the sqlite3 or MySQL table using an `insert` command string in the sqlite3 example above.  And, again, you can examine that data using sqlite3 or MySQL commands similar to the sqlite3 command examples given above.
 
-If you move your newly-compiled version of `ws` to `/usr/local/bin` with `make install`, and if you are running systemd to manage services, then upon reboot or by issuing a `sudo systemctl start WeatherStation.service` command, your sqlite3 or MySQL version of `ws` will begin autonomous operation to collect and archive meterological data to its SQL table.
+If you move your newly-compiled version of `ws` to `/usr/local/bin` and install the `systemctl` links with `make install`, your sqlite3 or MySQL version of `ws` will begin autonomous operation to collect and archive meterological data to its SQL table, and it will restart automatically when you reboot your system.
+
+##Uninstall##
+
+You can use `make clean` from the `WeatherStation/src` directory to remove construction debris from the `make` commands.  
+
+To remove WS from `/usr/local/bin` and stop, disable, and remove WeatherStation.service to prevent it from restarting upon a Pi reboot, use `sudo WeatherStation/src/make uninstall`.
 
 
 
 #Appendix -- minicom setup
 
-If you use minicom to test `wp` on the Arduino from a host program, you'll need to set up the minicom configuration.  You can type `minicom -s` and set parameters as below, or you can create/edit the file `/etc/minicom/minicom.dfl`,
+If you use minicom to test `WP` on the Arduino from a host program, you'll need to set up the minicom configuration.  You can type `minicom -s` and set parameters as below, or you can create/edit the file `/etc/minicom/minicom.dfl`,
 
 	/etc/minicom/minirc.dfl 
 	# Machine-generated file - use "minicom -s" to change parameters.
@@ -152,7 +194,7 @@ If you use minicom to test `wp` on the Arduino from a host program, you'll need 
 	pu localecho        Yes
 	pu addcarreturn     Yes
 	
-Note the use of the character translation table, miniconv.tbl.  Minicom and wp running on the Arduino have differing ideas of what terminates a line.  Rather than encounter problems with the IDE when I do need to use it, I taught minicom to change its CR line termination character to a LF character.  Since the change is in the CNTL character section of the ASCII codes, just putting that table here wouldn't be helpful.  You'll need to make that one change yourself.  Here's how:
+Note the use of the character translation table, miniconv.tbl.  Minicom and WP running on the Arduino have differing ideas of what terminates a line.  Rather than encounter problems with the IDE when I do need to use it, I taught minicom to change its CR line termination character to a LF character.  Since the change is in the CNTL character section of the ASCII codes, just putting that table here wouldn't be helpful.  You'll need to make that one change yourself.  Here's how:
 
 1. On your host, `sudo minicom -s` (must be privileged to save to /etc/minicom)
 1. Downarrow to the `screen and keyboard` menu entry and press enter
@@ -166,9 +208,13 @@ Note the use of the character translation table, miniconv.tbl.  Minicom and wp r
 
 #Appendix -- arduino.mk Makefile
 
-	$cat Makefile 
-	ARDMK_DIR = /usr/share/arduino
-	BOARD_TAG = uno
+	$cat WP/Makefile 
+	ARDUINO_LIBS  = TFT SPI I2C OneWire ChronodotI2C MPL3115A2 DHT DS18
+	ARDUINO_DIR   = /usr/share/arduino
+	ARDMK_DIR     = /usr/share/arduino
+	AVR_TOOLS_DIR = /usr
+	AVRDUDE_CONF  = /usr/share/arduino/hardware/tools/avrdude.conf
+	BOARD_TAG     = uno
 	include $(ARDMK_DIR)/Arduino.mk
 	
 	
