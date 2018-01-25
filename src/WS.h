@@ -4,8 +4,8 @@
 
 // defs used in SQL db processing
 #define myHost     NULL
-#define myUsrName  "root"
-#define myPwd      "ducks1"
+#define myUsrName  "pi"
+#define myPwd      "BetterNotBeRaspberry"
 #define myDB       "weather"
 #define sqlite3DB "~/WeatherData.db"
 
