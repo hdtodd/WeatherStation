@@ -1,5 +1,5 @@
 #<center>WeatherProbe/WeatherStation</br>Principles of Operation
-###<center>[H. David Todd](hdtodd@gmail.com), September, 2017</center></br>
+###<center>[H. David Todd](hdtodd@gmail.com), January, 2018</center></br>
 
 *WeatherProbe* (WP) is a program that runs on the Arduino single-board microcontroller to manage and read data from various meterological sensors.  *WeatherStation* (WS) is a program that runs on the Raspberry Pi or other Linux/Macintosh system to store that meterological data and report or present it. They are the Arduino and Raspberry Pi software components, respectively, of a meterological station *system*. They work together to collect+display (Arudino) and record+present (Pi) meterological data from a set of sensors connected to the Arduino. This document describes the operation of that system -- how the individual components function and how they function as a system.  This PO manual may help others add components to the Arduino or functionality to the system.
 
@@ -10,7 +10,7 @@ The WS program on the Raspberry Pi/Linux controller manages the WP probe program
 
 The WS program then performs the reporting action *it* was commanded to do at startup.  WS reporting options include:
 
-1. Reporting results on the terminal controlling the WS program, in well-formatted lines with labels for data;
+1. Reporting results on the terminal controlling the WS program, in a report format with well-formatted lines and with labels for data;
 1. Appending the results to a sqlite3 (default) or MySQL database;
 1. Appending the results to an XML file, with appropriate XML tags in conformance with a standard DTD template for the reported data.
 
@@ -20,7 +20,7 @@ The WP program primarily performs actions only in response to WS commands over t
 
 ##WeatherProbe (WP -- Arudino Code)
 
-Arduino code has two major procedures as the main program: setup() and loop().  One-time initialization tasks are performed in setup(), and the program then enters loop(), which executes repeatedly until shutdown.
+Arduino code has two major procedures as the main program: setup() and loop().  One-time initialization tasks are performed in setup(), and the program then enters loop(), which executes repeatedly until powerdown or restart.
 
 ###Startup
 Upon upload, powerup, or restart, the WP code in the setup() procedure in the Aruindo:
@@ -31,7 +31,7 @@ Upon upload, powerup, or restart, the WP code in the setup() procedure in the Ar
 1. Enters a loop in which it continuously performs the following steps.
 	1. Periodically (default 1 minute) updates weather information on the TFT display attached to the Arduino, if there is one.
 	1. Looks for a command string coming over the USB serial port from the controlling device or person.
-	1. In response to commands, performs the appropriate action, perhaps with text response back to the controlling device/person over the USB serial port.  The most common command operation would be "sample", which causes WP to sample the data from each of the sensors; update the display (if there is one); and, if it has been requested to do so, report the sampled data with date-time stamp in the appropriate format (report, CSV, or XML).
+	1. In response to commands, performs the appropriate action, perhaps with text response back to the controlling device/person over the USB serial port.  The most common command operation would be `sample`, which causes WP to sample the data from each of the sensors; update the display (if there is one); and, if it has been requested to do so, report the sampled data with date-time stamp in the appropriate format (report, CSV, or XML).
 	1. Repeat the loop to await further commands, while continuing to update the display periodically, if there is one. 
 
 There is no "exit" from this code.  Once it has initialized in setup(), it enters the loop() procedure and loops until it receives a command to `restart`, at which point it simply restarts the process from step 1 above, or until the Arduino is reloaded or powered down.
@@ -46,7 +46,7 @@ WP has support for the following devices connected to the Arduino:
 1. DS18-class thermal sensors (up to 4, as a compile-time parameter) connected via OneWire interface to Arduino pins
 
 
-If a Chronodot is not present, WP uses the internal clock of the Arduino to timestamp events.  That clock is set based upon the compile time of the WP code.  [A better approach would be to add a command to WP to set the time from the controlling system, then set the time for either Chronodot or Arduino from that external system, which is more likely to have an accurate time.]
+If a Chronodot is not present, WP uses the internal clock of the Arduino to timestamp events.  That clock can be set by command from the controlling host over the USB serial line, which WeatherStation does when it starts up.  You'll need to do that manually if you're running WP in terminal monitor mode.
 
 If a TFT display is present, it is used to show the date-time stamp of the latest sample, the temperatures reported on the first two DS18 temperature probes in that sampling, the relative humidity, and the **unadjusted** (see MPL below) barometric pressure in Pascals (divide by 100 to get millibars). **Barometric pressure is adjusted by the MPL3115A2 code for the altitude of the device, which is a compile-time parameter set at 40m.  It is otherwise reported from the raw data read and not adjusted for temperature or humidity.** 
 
@@ -64,6 +64,7 @@ WP commands include the following set:
 </br>**xmlstart**</br>causes WP to immediately return the XML header string over the USB serial port and then sets WP to be in *xml* reporting mode so that subsequent <tt>sample</tt> commands return the timestamped, collected sensor-data as XML-tagged data samples.</br>
 </br>**xmlstop**</br>causes WP to immediately return the XML termination string over the USB serial port and disable xml reporting mode (reporting is disabled until another command is issued that again enables a reporting mode)</br>
 </br>**sample**</br>causes WP to sample each of the known sensors and update the TFT display, if there is one.  If a reporting mode is enabled, WP also returns, over the USB serial connection to the controlling program/terminal, a string containing the date-time stamp and sampled data in the format required by the active reporting mode.</br></br>With a full set of devices, the time required for one sampling is about 1400 milliseconds (1.4 sec).</br>
+</br>**settime yyyy-mn-dd hh:mm:ss** (all digits, 24-hour clock, must be formatted exactly in this way) causes WP to set the Chrondot real-time clock (if there is one) or the date-time offset for the internal Arduino interval timer, so that subsequent date-time stamps are synchronized with the host computer system.</br>
 </br>**restart**</br>causes the Arduino to reboot and restart WP.</br>
 
 
@@ -72,7 +73,7 @@ WP commands include the following set:
 Most of the devices supported by WP are straightforward: one device, one connection, one set of data per sampling.  The exception is the DS18-class thermal sensors connected via OneWire: there may be many DS18 devices (limit of 4 as compiled).
 
 <p style="margin-left:40px">**Chronodot RTC**</br>
-The Chronodot is a battery-maintained real-time-clock (RTC) that provides the date-time string used as timestamp for data records sent to the controlling program/terminal and used to display on the TFT display (if there is one).  Other RTC devices could be substituted for the Chronodot with minor changes to the code in WP.  WP assumes that the Chronodot date+time have been set before WP starts up.  [A useful additional function would be to have WP accept a command to set date+time.]  In the absence of a Chronodot, WP assumes that it has just started as a result of a new compile/upload sequence and uses the date+time of its own compilation plus the elapsed time since WP started as the current date+time for its date-time stamp.</br>
+The Chronodot is a battery-maintained real-time-clock (RTC) that provides the date-time string used as timestamp for data records sent to the controlling program/terminal and used to display on the TFT display (if there is one).  Other RTC devices could be substituted for the Chronodot with minor changes to the code in WP.  WP assumes that the Chronodot date+time have been set before WP starts up, but the Chronodot's time can be changed with the `settime` command.  In the absence of a Chronodot, WP uses the the elapsed time since WP started as the current date+time for its date-time stamp, but, again, its base time can be set with the `settime` command.</br>
 </br>**TFT Display**</br>
 The SainSmart 1.8" TFT LCD display is a color 128x160-pixel display connected via SPI interface.  The SainSmart version differs from the Adafruit version in its pinouts.  The implementation here (ST7335) uses the SainSmart pin layout for "high display speed" [[https://www.tweaking4all.com/hardware/arduino/sainsmart-arduino-color-display/]()].  WP supports the ST7735R and  ILI9163C models. The WP code is compiled to display in portrait mode but could be easily modified for landscape. The code is highly modular, with display initialization in separate section within setup() and with the display code itself in a separate procedure called from within loop().  
 </br>**MPL3115A2**</br>The MPL3115A2 is a sophisticated altitude/barometer/temperature sensor that provides the ability to read each type of sensor data independently.  Internally, the MPL reads pressure relative to an internal vacuum chamber.  It provides the ability to add a "trim" to pressure and altitude readings to compensate for any internal inaccuracies.  In setup(), WP sets that "trim" value for altitude to the difference between the MPL-measured value and a reading you might make from a GPS system, and the MPL applies that trim to any altitude reading it makes.  (The MPL code does not provide for applying pressure "trim").  Set `MY_ALTITUDE` in `WP.h` to your GPS-measured altitude, in meters, if the altitude reading is important to you and you intend to move the location of the Arduino probe with its MPL.  During sampling, WP collects altitude, pressure, and temperature from the sensor.  Using a terminal connection, put WP in `report` mode and command a `sample` to obtain the MPL readings for all three sensor values.</br>
