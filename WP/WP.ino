@@ -242,10 +242,10 @@ void setup(void) {
     haveDS18 = false;
   };
   if (dsCount>=DSMAX) {
-    Serial.println("[%WP] Number of OneWire devices exceeds internal storage limit");
-    Serial.print(  "             Only ");
+    Serial.println(F("[%WP] Number of OneWire devices exceeds internal storage limit"));
+    Serial.print(  F("             Only "));
     Serial.print(--dsCount);
-    Serial.print(" DS18 devices will be sampled.");
+    Serial.print(F(" DS18 devices will be sampled."));
   };
 
   // set the precisions for DS18 probe samplings
@@ -338,7 +338,7 @@ void loop(void) {
       break;
     case chelp:
     case noCmd:
-      Serial.print("Command, one of: ");
+      Serial.print(F("Command, one of: "));
       for (cmd=(int)vers; cmd < (int)noCmd; cmd++) { 
       Serial.print(cmdNames[cmd]); Serial.print(" | "); };
       Serial.println("?");
@@ -371,24 +371,20 @@ void reportOut(rptModes rptMode, struct recordValues *rec) {
     Serial.print(F("Pa"));
     Serial.print(F(" Temp="));
     Serial.print(rec->mpl.tempf, 1);
-    Serial.print(F("F"));
+    Serial.print(F("\xB0""F"));
     Serial.print(F("  DHT22: Temp="));
     Serial.print(rec->dht.tempf,1);
-    Serial.print(F("F @ "));
+    Serial.print(F("\xb0""F @ "));
     Serial.print(rec->dht.rh,0);
     Serial.print(F("% RH"));
     Serial.print(F("  DS18: "));
-    for (int dev=0; dev<dsCount; dev++) {
+    for (int dev=0; dev<DSMAX; dev++) {
       Serial.print(rec->ds18.label[dev]);
       Serial.write('=');
       Serial.print(rec->ds18.tempf[dev],1);
-      Serial.print("F ");
+      Serial.print(F("\xB0""F "));
       };
-    // If not DSMAX devices, output dummy 
-    for (int dev=dsCount; dev<DSMAX; dev++) Serial.print("**=00.0F  ");
-    Serial.print(F("  Loop time: "));
-    Serial.print(millis() - startTime);
-    Serial.println(F(" ms"));
+    Serial.println();
     break;
 
   case csv:                    // CSV printout for database or spreadsheet
@@ -463,7 +459,7 @@ void setTime(char *dtS) {
   mm = xconv2d(dtS+14);
   ss = xconv2d(dtS+17);
   if (yy*mn*dd==0) { 
-    Serial.print("?setTime called with yy*mon*dd = 0 and input string = '");
+    Serial.print(F("[%WP] setTime called with yy*mon*dd = 0 and input string = '"));
     Serial.print(dtS);
     Serial.println("'");
     }
@@ -503,7 +499,7 @@ void readSensors(struct recordValues *rec) {
     rec->mpl.tempf  = 0.0;
   };
   
-  if ( haveDHT22) {
+  if ( haveDHT22 ) {
     rec->dht.tempf = myDHT22.readTemperature(true); // Get DHT22 data with temp in Fahrenheit
     rec->dht.rh    = myDHT22.readHumidity();
   } else {
@@ -517,6 +513,12 @@ void readSensors(struct recordValues *rec) {
       rec->ds18.tempf[dev] = CtoF(ds18.getTemperature(dsList[dev].addr, data, false));
       rec->ds18.label[dev][0] = data[2];
       rec->ds18.label[dev][1] = data[3];
+      rec->ds18.label[dev][2] = 0x00;
+    };
+  } else {
+    for (int dev=0; dev<DSMAX; dev++) {
+      rec->ds18.tempf[dev] = 0.0;
+      rec->ds18.label[dev][0] = rec->ds18.label[dev][1] = '*';
       rec->ds18.label[dev][2] = 0x00;
     };
   };
@@ -540,22 +542,22 @@ void updateTFT(struct recordValues *rec) {
   };
 
   // print the new values to the TFT
-  //  sprintf(timeDisplay, "%8s", rec->cd.dt[11]);
+  // Arduino's sprintf doesn't handle %f formatting; use dtostrf() hack
     for (int i=0; i<8; i++) timeDisplay[i]= rec->cd.dt[i+11]; timeDisplay[8] = (char)0x00;
     dtostrf(rec->mpl.press, 6, 0, ts);
     sprintf(pDisplay, "%s Pa", ts); 
 
     // Display the labels and temps from just the first two DS18 probes
     dtostrf(rec->ds18.tempf[0], 3, 1, stf);
-    sprintf(temp1Display, "%s=%s F",rec->ds18.label[0],stf);
+    sprintf(temp1Display, "%s=%s  F",rec->ds18.label[0],stf);
     dtostrf(rec->ds18.tempf[1], 3, 1, stf);
-    sprintf(temp2Display, "%s=%s F",rec->ds18.label[1],stf);
+    sprintf(temp2Display, "%s=%s  F",rec->ds18.label[1],stf);
     temp1Display[7] = temp2Display[7] = 0xF7;  // degree char on TFT
 
     dtostrf(rec->dht.rh, 2, 0, stc);
     sprintf(rhDisplay, "%s %%RH", stc);
     TFTscreen.stroke(127, 255, 255);      // set the font color
-    TFTscreen.text(timeDisplay, 0, 0); //[hdt]
+    TFTscreen.text(timeDisplay, 0, 0);
     TFTscreen.text(pDisplay, 0, 120);
     TFTscreen.stroke(255,127,255);        // diff color for temp/humidity
     TFTscreen.text(temp1Display, 0, 30);
