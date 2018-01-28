@@ -20,11 +20,11 @@ You can check that the data are being collected with the commands:
 	sqlite> .quit
 	
 
-If you installed the file `/var/www/index.php` **being careful not to overwrite any current index.php file there!** and if Apache2 is running, you can point your web browser to your host computer to see current conditions and (after a period of time to collect data) a graphical representation of the last week of temperature and barometric pressure.
+If you installed the file `/var/www/index.php`, **being careful not to overwrite any current index.php file there!**, and if Apache2 is running, you can point your web browser to your host computer to see current conditions and (after a period of time to collect data) a graphical representation of the last week of temperature and barometric pressure.
 
 Even if you don't have or don't intend to install the various devices WP is prepared to support, you'll need to download and compile in the libraries in order to compile WP.  Unavailable devices are ignored during operation.  
 
-The installation below is tailored for a new installation of Raspbian Stretch 4.9.59 running Arduino 2.1.0.5, but WP/WS was developed on and is known to run on Jessie and earlier versions of Arduino compiler tools.  However, if you have customized the Arduino development environment from the standard IDE installation, you may need to change some configuration parameters (particulary in WP's `Makefile` -- see Appendix).  
+The installation below is tailored for a new installation of Raspbian Stretch 4.9.59 running Arduino 2.1.0.5, but WP/WS was developed on and is known to run on Jessie and earlier versions of Arduino compiler tools.  However, if you have customized the Arduino development environment from the standard IDE installation, you may need to change some configuration parameters (particulary in WP's `Makefile` -- see Appendix).  The formatted reporting uses the degree sign for temperature records: set your locale (`sudo raspi-config`) to `en_US.UTF-8` or equivalent in other languages for that to display correctly.
 
 Here are the steps:
 
@@ -71,7 +71,7 @@ The Arduino program is compiled and linked on the host to create a binary file t
 
 WP supports several devices, but if any are absent, WP collects and reports data from whatever sensors it *does* see.  In particular, WP will use a Chronodot real-time clock (1307-based RTC) if one is installed. But if no Chronodot is present, WP will use the Arduino's internal timer, with current date-time set by command from the controlling computer.  As a result, WP will operate and present results (with zeros for missing sensors) with no connected devices.
 
-WP's expectations for wiring connections to various sensors is documented in the `WP.h` file.  That file also documents other parameters that might be changed, such as the time between updates to the TFT display or the number of DS18 thermal sensor (if you need more than 4).  If you use the Fritzing diagram for connecting sensors, TFT, and clock to the Arduino, no changes in parameters are needed.
+WP's expectations for wiring connections to various sensors are documented below and in WP.h.  That file also documents other parameters that might be changed, such as the time between updates to the TFT display or the number of DS18 thermal sensor (if you need more than 4).  If you use the Fritzing diagram for connecting sensors, TFT, and clock to the Arduino, no changes in parameters are needed.
 
 There are no compilation options for WP with regard to sensors.  Library code for all supported sensors is compiled into the base code.  At startup, WP tests for the presence of the various sensors and uses that list to determine which ones to sample periodically.
 
@@ -82,6 +82,48 @@ If you want to compile and upload the WP code into the Arduino without running W
 * `make upload; minicom`
 
 assuming that you're using `minicom` for communication between your host Pi and the probe.  Once the code is uploaded, it will announce itself over the USB connection, inform you of any missing sensors, and then await commands over the USB port.  `?` or `help` will give a list of commands to try.  A simple example would be to type `report` and then `sample` to show you the datetime stamp and readings from any connected sensors.  WP does not support editing of command lines typed, so you can't correct typing mistakes.  Just press RETURN and start a new command line.
+
+##Connecting the Arduino to Devices
+
+See the Fritzing circuit diagram (`WS_Probe.fzz` or `WS_Probe.pdf`) for details, and check or edit `WP.h` to review and/or change the pin assignments on the Arduino.  Those assignments are for the Uno R3: you may need to change pin assignments on other models.
+
+Again, missing devices are ignored by the program.  For those devices you do have, the program pin assignments are as follow:
+
+###Chronodot Real-Time-Clock
+*	VCC to Arduino 5v
+* 	GND to Arduino GND
+*  	SCL to Arduino pin 13
+*	SDA to Arduino pin 11
+
+###TFT pin definitions for Sainsmart 1.8" TFT SPI on the Arduino
+*	TFT VCC to Arduino 5v
+* 	TFT GND to Arduino GND
+*  	TFT SCL to Arduino pin 13
+*	TFT SDA to Arduino pin 11
+* 	TFT CS to Arduino pin 10
+*	TFT RS/DC to Arduino pin 9
+*	TFT Reset to Arduino pin 8
+* 	Arduino RESET to Arduino pin 7 (to enable TFT hardware reset on restart command)
+
+
+###DS18 pin definitions
+*	VCC to Arduino 5v (We use powered rather than parasitic mode, so VCC is needed)
+* 	GND to Arduino GND
+*  	Data wire to Arduino pin 5 with 4K7 Ohm pullup to VCC 5V
+
+
+###DHT22 pin definitions
+*	VCC to Arduino 5v
+*	GND to Arduino GND
+*	Data pin to Arduino pin 2 with 10K pullup to VCC 5v
+
+
+###MPL3115A2 pin definitions
+*	VCC to Arduino 5v
+* 	GND to Arduino GND
+* 	SCL to Arduino SCL
+*	SDA to Arduino SDA
+
 
 ##WeatherStation (WS)
 
