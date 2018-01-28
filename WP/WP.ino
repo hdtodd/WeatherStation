@@ -151,6 +151,13 @@ boolean    haveDisplayed=false, gotCmd=false, timedOut=true;
  -----------------------------------------------------------------
 */
 void setup(void) {
+  // set up to use Arduino RESET line in case it's wired
+  // if not wired for hardware reset, Arduino won't see TFT on restart
+  // See ref at http://www.instructables.com/id/two-ways-to-reset-arduino-in-software/
+  digitalWrite(ardRESET, HIGH);
+  delay(200);
+  pinMode(ardRESET, OUTPUT);
+
   // start serial port
   Serial.begin(9600,SERIAL_8N1);
   Serial.println("WP starting");
@@ -284,7 +291,8 @@ void setup(void) {
 void loop(void) { 
   long marker;
   DateTime now;
-  int cmd;
+  int cmd=noCmd;
+  boolean foundCmd=false;
   String cmdString;
   struct recordValues rec;
   
@@ -300,12 +308,13 @@ void loop(void) {
   if (gotCmd) {                       //  we received a command: get and parse it
     cmdString = Serial.readStringUntil('\n');
     cmdString.toLowerCase();
-    if (cmdString.equals("?")) cmdString="help";
-    for (cmd = (int)vers; cmd < (int)noCmd; cmd++) {
-      if (cmdString.startsWith(cmdNames[cmd])) break;
-      };
+    foundCmd = false;
+    cmd = (int)vers-1;
+    do
+      foundCmd = (cmdString.startsWith(cmdNames[++cmd]));
+      while ( !foundCmd && cmd<noCmd );
     } else {
-      cmd = csample;	             // timedOut almost like sample
+      cmd = csample;                 // timedOut almost like sample
     };				     // end if (gotCmd) ... else
   };				     // end while (!gotCmd && !timedOut)		
 
@@ -336,18 +345,22 @@ void loop(void) {
       rptMode = none;
       Serial.println(F("</samples>"));
       break;
-    case chelp:
-    case noCmd:
-      Serial.print(F("Command, one of: "));
-      for (cmd=(int)vers; cmd < (int)noCmd; cmd++) { 
-      Serial.print(cmdNames[cmd]); Serial.print(" | "); };
-      Serial.println("?");
-      break;
     case csettime:
       setTime((char *) (cmdString.substring(8)).c_str());
       break;
     case crestart:
-      restartFunc();
+      // See http://www.instructables.com/id/two-ways-to-reset-arduino-in-software/
+      digitalWrite(ardRESET, LOW);			   // [hdt] try hard reset first
+      restartFunc();	     				   // if not wired, do soft & let TFT fail
+      Serial.println(F("[?WP] Hard and soft reset attempts failed!"));
+      break;
+    default:
+    case chelp:
+    case noCmd:
+      Serial.print(F("Command, one of: "));
+      for (cmd=(int)vers; cmd < (int)noCmd; cmd++) { 
+        Serial.print(cmdNames[cmd]); Serial.print(" | "); };
+      Serial.println("?");
       break;
     };				// end switch(cmd)
 
@@ -507,6 +520,7 @@ void readSensors(struct recordValues *rec) {
     rec->dht.rh    = 0.0;
   };
 
+// Get data for the DS18's we have, zero the rest
   if ( haveDS18 ) {
     ds18.waitForTemps(convDelay[(int)dsResMode]);
     for (int dev=0; dev<dsCount; dev++) {
@@ -515,12 +529,11 @@ void readSensors(struct recordValues *rec) {
       rec->ds18.label[dev][1] = data[3];
       rec->ds18.label[dev][2] = 0x00;
     };
-  } else {
-    for (int dev=0; dev<DSMAX; dev++) {
-      rec->ds18.tempf[dev] = 0.0;
-      rec->ds18.label[dev][0] = rec->ds18.label[dev][1] = '*';
-      rec->ds18.label[dev][2] = 0x00;
-    };
+  };
+  for (int dev=dsCount; dev<DSMAX; dev++) {
+    rec->ds18.tempf[dev] = 0.0;
+    rec->ds18.label[dev][0] = rec->ds18.label[dev][1] = '*';
+    rec->ds18.label[dev][2] = 0x00;
   };
 };                            // end readSensors
 

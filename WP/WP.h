@@ -11,8 +11,8 @@ typedef enum rptMode {none=0, report, csv, xml} rptModes;
 typedef enum cmdTypes {vers=0, csample, creport, ccsv, cxmlstart, 
 		       cxmlstop, cwhoru, chelp, csettime, crestart,  noCmd} cmds;
 static const String cmdNames[] = {"version","sample", "report", "csv", 
-				  "xmlstart", "xmlstop", "whoru", "help", "settime",
-				  "restart", "unrecognized"};
+				  "xmlstart", "xmlstop", "whoru", "help",
+				  "settime", "restart", "unrecognized"};
 
 // Chronodot RTC
                               // VCC to Uno 5v, GND to Uno GND
@@ -20,6 +20,9 @@ static const String cmdNames[] = {"version","sample", "report", "csv",
                               // SDA to Uno pin 11
 
 // TFT pin definitions and parameters for Sainsmart 1.8" TFT SPI on the Uno
+#define ardRESET 7            // wire Arduino RESET pin to Arduino pin 7 to allow TFT reset on restart
+                              // TAKE CARE in picking a pin: 12 didn't work.
+                              // Even now, uploading may not sync correctly with 7 tied to reset
                               // VCC to Uno 5v, GND to Uno GND
                               // SCL to Uno pin 13
                               // SDA to Uno pin 11
