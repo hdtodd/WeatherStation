@@ -63,12 +63,20 @@ all: ${PROJ}
 .c.o:	
 	$(CC) $(CFLAGS) -c $(INCLUDES) $<
 
+#  Compile and link the WS (Pi) and WP (Arduino) programs
 ${PROJ}: ${OBJS} 
 	echo "Making " ${DBTYPE} " version of WeatherStation"
 	$(CC) -o $@ $(LDFLAGS) ${OBJS} $(LIBS)
 	echo "Making WeatherProbe"
 	$(MAKE) -C ../WP
 
+#  Upload the WP program to the Arduino
+upload:
+	$(MAKE) -C ../WP upload
+
+
+#  Install the WS components on the Pi and register with systemctl
+#  THIS PART MUST RUN AS ROOT: "sudo make install"
 install:
 #	Create the database directory if necessary, and
 #	  check to see if we can move the executable to 

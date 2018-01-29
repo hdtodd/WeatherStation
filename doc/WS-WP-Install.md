@@ -39,26 +39,25 @@ Here are the steps:
 1. Clone into `~/sketchbook` the WeatherStation package from Github: 
 	* `cd ~/sketchbook`
 	* `git clone https://github.com/hdtodd/WeatherStation`
-1. Clone into `/usr/share/arduino/libraries` the various external library packages WP uses:
+1. Clone into `~/sketchbook/libraries` the various external library packages WP uses:
 	* `cd /usr/share/arduino/libraries`
 	* `sudo clone https://github.com/PaulStoffregen/OneWire`
 	* `sudo clone https://github.com/rambo/I2C`
-	* `sudo clone https://github.com/adafruit/DHT-sensor-library DHT`  (the IDE complains about the "-"'s if you leave off "DHT").  Then `sudo rm DHT/DHT-U*` as we don't use the universal package and it requires other libraries.
-1. Clone into your personal Arduino library the library packages developed for the WP program:
-	* `cd ~/sketchbook/libraries`
+	* `sudo clone https://github.com/adafruit/DHT-sensor-library DHT`  (the IDE complains about the "-"'s if you leave off "DHT").  Then `sudo rm DHT/DHT_U*` as we don't use the universal package and it requires other libraries.
 	* `clone https://github.com/hdtodd/ChronodotI2C`
 	* `clone https://github.com/hdtodd/DS18`
 	* `clone https://github.com/hdtodd/MPL3115A2`
 1. If your Arduino is something other than a Uno, `nano ~/sketchbook/WeatherStation/WP/Makefile` to edit the `Makefile` entry for `BOARD_TAG` to be your model of Arduino.  See Appendix for my functioning `Makefile`.
-1. Compile, upload, and start the Weatherstation and WeatherProbe as services:
-	* `cd ~/Arduino/WeatherStation/src`
+1. Compile and link Weatherstation and WeatherProbe programs and upload the WP code to your connected Arduino:
+	* `cd ~/sketchbook/WeatherStation/src`
 	* `make`
-	* `sudo make install`</br>
-The WS and WP code will be compiled; the WS code will be installed in `/usr/local/bin`; the `WeatherStation.service` file will be installed and enabled and started on the Pi; and the WP code will be uploaded to the Arduino.  If a TFT LCD display is connected to the Arduino, it will begin displaying current time and conditions.  The WS program will begin collecting data and storing into `/var/databases/WeatherData.db`.
+	* `make upload` </br> At this point, you can test the uploaded WP code on the Arduino by connecting to it as a terminal over the USB connection (using `screen` or `minicom`).  
+1.	Now install the WS software on the Pi with the command:
+	* `sudo make install`</br> The WS code will be installed in `/usr/local/bin`; the `WeatherStation.service` file will be installed, enabled, and started by `systemctl` on the Pi. If a TFT LCD display is connected to the Arduino, it will begin displaying current time and conditions when the Pi WS program collects its first sample.  The WS program will store data into `/var/databases/WeatherData.db`.
 1. To avoid destroying a functioning web site, the installation procedure does not automatically install the PHP code needed by Apache2 to display accumulated weather data.  Read the `WeatherStation/src/Makefile` for instructions for manual installation.
 
 
-#Overview
+#Detailed Instructions
 
 ##WeatherProbe (WP)
 
@@ -69,7 +68,7 @@ The "host" is referenced here as a Raspberry Pi, but it could be any other Linux
 
 The Arduino program is compiled and linked on the host to create a binary file that is executable by the Arduino.  The Arduino binary code is uploaded to the Arduino over the USB serial port *and stays resident and active until replaced, even through power cycling*.
 
-WP supports several devices, but if any are absent, WP collects and reports data from whatever sensors it *does* see.  In particular, WP will use a Chronodot real-time clock (1307-based RTC) if one is installed. But if no Chronodot is present, WP will use the Arduino's internal timer, with current date-time set by command from the controlling computer.  As a result, WP will operate and present results (with zeros for missing sensors) with no connected devices.
+WP supports several sensor devices, but if any are absent, WP collects and reports data from whatever sensors it *does* see.  WP will use a Chronodot real-time clock (I2C-connected, 1307-based RTC) if one is installed. But if no Chronodot is present, WP will use the Arduino's internal timer, with current date-time set by command from the controlling computer.  As a result, WP will operate and present results (with zeros for missing sensors) with no connected devices.
 
 WP's expectations for wiring connections to various sensors are documented below and in WP.h.  That file also documents other parameters that might be changed, such as the time between updates to the TFT display or the number of DS18 thermal sensor (if you need more than 4).  If you use the Fritzing diagram for connecting sensors, TFT, and clock to the Arduino, no changes in parameters are needed.
 
