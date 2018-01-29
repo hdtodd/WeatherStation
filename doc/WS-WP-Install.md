@@ -41,12 +41,12 @@ Here are the steps:
 	* `git clone https://github.com/hdtodd/WeatherStation`
 1. Clone into `~/sketchbook/libraries` the various external library packages WP uses:
 	* `cd /usr/share/arduino/libraries`
-	* `sudo clone https://github.com/PaulStoffregen/OneWire`
-	* `sudo clone https://github.com/rambo/I2C`
-	* `sudo clone https://github.com/adafruit/DHT-sensor-library DHT`  (the IDE complains about the "-"'s if you leave off "DHT").  Then `sudo rm DHT/DHT_U*` as we don't use the universal package and it requires other libraries.
-	* `clone https://github.com/hdtodd/ChronodotI2C`
-	* `clone https://github.com/hdtodd/DS18`
-	* `clone https://github.com/hdtodd/MPL3115A2`
+	* `git clone https://github.com/PaulStoffregen/OneWire`
+	* `git clone https://github.com/rambo/I2C`
+	* `git clone https://github.com/adafruit/DHT-sensor-library DHT`  (the IDE complains about the "-"'s if you leave off "DHT").  Then `sudo rm DHT/DHT_U*` as we don't use the universal package and it requires other libraries.
+	* `git clone https://github.com/hdtodd/ChronodotI2C`
+	* `git clone https://github.com/hdtodd/DS18`
+	* `git clone https://github.com/hdtodd/MPL3115A2`
 1. If your Arduino is something other than a Uno, `nano ~/sketchbook/WeatherStation/WP/Makefile` to edit the `Makefile` entry for `BOARD_TAG` to be your model of Arduino.  See Appendix for my functioning `Makefile`.
 1. Compile and link Weatherstation and WeatherProbe programs and upload the WP code to your connected Arduino:
 	* `cd ~/sketchbook/WeatherStation/src`
