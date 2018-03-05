@@ -5,7 +5,7 @@
 
 #Quickstart
 
-After all of the software components have been installed and the Arduino has been connected to the Pi, a simple `make; sudo make install` will cause the system to begin collecting meteorlogical data into a sqlite3 table `ProbeData`, in the file `/var/databases/WeatherData.db`.
+After all of the software components have been installed and the Arduino has been connected to the Pi, a simple `make; sudo make install` will cause the system to begin collecting meteorological data into a sqlite3 table `ProbeData`, in the file `/var/databases/WeatherData.db`.
 
 The system will collect data even if you have no sensors, no TFT display, and no real-time-clock connected to the Arduino!  You'll get records with a date-time stamp based on the date-time of your controlling Pi and with zeros for the rest of the data.  That's an easy way to test your software setup before you wire in sensors.  Then power-off and add the sensors, display, or real-time clock that you do have available and restart: the system will append real data to your database table.
 

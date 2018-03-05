@@ -1,6 +1,6 @@
 // Definitions used by the Arduino Uno Weather_Probe code, WS.ino
 //
-#define Vers "WP5.1 DB3.0"    // <Code-version> <Database-version>
+#define Vers "WP5.2 DB3.0"    // <Code-version> <Database-version>
                               // DB version may be used to create
                               // sqlite3 DB CREATE/INSERT strings,
                               // so be sure to update its version
@@ -49,6 +49,8 @@ tftTYPE  findTFT(void);
 #define DHTPIN 2              // Data pin to Uno pin 2
                               // connect a 4K7-10K pull-up resistor between VCC 5v and data pin
 #define DHTTYPE DHT22         // the model of our sensor -- could be DHT11 or DHT21
+
+#define samplingLED 12        // pin to put a current-limited LED to be signaled during sampling
 
 // MPL3115A2 pin definitions and parameters
                               // VCC to Uno 5v, GND to Uno GND

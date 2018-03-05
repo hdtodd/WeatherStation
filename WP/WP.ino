@@ -32,7 +32,10 @@
 
    Code and revisions to this program by HDTodd:
 
-  V5.1, 2017\01\17
+  V5.2, 2018\02\20
+    Add samplingLED to turn on LED (default pin 12) when WP is sampling sensors
+
+  V5.1, 2018\01\17
     Add support for setting and getting time from Arduino from controller
 
   V5, 2017\08\31
@@ -157,6 +160,8 @@ void setup(void) {
   digitalWrite(ardRESET, HIGH);
   delay(200);
   pinMode(ardRESET, OUTPUT);
+  pinMode(samplingLED, OUTPUT);
+  digitalWrite(samplingLED, LOW);
 
   // start serial port
   Serial.begin(9600,SERIAL_8N1);
@@ -495,6 +500,7 @@ void getTime(char dtString[20]) {
 void readSensors(struct recordValues *rec) {
   uint8_t data[9];
 
+  digitalWrite(samplingLED, HIGH);	    // visual sign that we're sampling
   // time stamp this record
   getTime(rec->cd.dt);
 
@@ -535,6 +541,7 @@ void readSensors(struct recordValues *rec) {
     rec->ds18.label[dev][0] = rec->ds18.label[dev][1] = '*';
     rec->ds18.label[dev][2] = 0x00;
   };
+  digitalWrite(samplingLED, LOW);
 };                            // end readSensors
 
 void updateTFT(struct recordValues *rec) {
