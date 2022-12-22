@@ -1,6 +1,6 @@
 // Definitions used by the Arduino Uno Weather_Probe code, WS.ino
 //
-#define Vers "WP5.2 DB3.0"    // <Code-version> <Database-version>
+#define Vers "WP5.3 DB3.0"    // <Code-version> <Database-version>
                               // DB version may be used to create
                               // sqlite3 DB CREATE/INSERT strings,
                               // so be sure to update its version
@@ -57,9 +57,12 @@ tftTYPE  findTFT(void);
                               // SCL to Uno SCL
                               // SDA to Uno SDA
 uint8_t sampleRate=S_128;     // Sample 128 times for each MPL3115A2 reading
-#define MY_ALTITUDE 40        // Set this to your actual GPS-verified altitude in meters
+#define MY_ALTITUDE 151       // Set this to your actual GPS-verified altitude in meters
                               // if you want altitude readings to be corrected
-                              // Bozeman, MT = 1520, Williston VT = 40
+                              // Bozeman, MT = 1520m, Williston VT = 151m
+#define MY_ELEV_CORR 18.0*100 // millibars-> Pascals, From Table 2,
+                              //   https://www.starpath.com/downloads/calibration_procedure.pdf
+#define MY_CALIB_CORR 3.5*100 // millibars-> Pascals, calibrated for my MPL: replace with yours
 #define FT_PER_METER 3.28084  // conversion
 
 void     (* restartFunc) (void) = 0;  // declare restart function at address 0

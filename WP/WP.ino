@@ -1,4 +1,4 @@
-/* Weather_Probe V5.1
+/* Weather_Probe V5.3
  
    In response to queries from a USB-connected Raspberry Pi, gather
    and report back meterological  data using the DS18B20 temp sensor,
@@ -31,6 +31,12 @@
    For the ST7735-based TFT display, Adafruit's TFT Library is used.
 
    Code and revisions to this program by HDTodd:
+
+  V5.3, 2022\12\22
+    Adjust pressure to be sea-level pressure using calibration 
+    correction and altitude correction.  Code changes in WP.ino.
+    See WP.h to adjust parameters for other sensors and locations
+    other than Williston VT.
 
   V5.2, 2018\02\20
     Add samplingLED to turn on LED (default pin 12) when WP is sampling sensors
@@ -207,7 +213,7 @@ void setup(void) {
   haveMPL3115 = baro.begin();	    // is MPL3115 device there?
   if ( haveMPL3115 ) {              // yes, set parameters
     baro.setOversampleRate(sampleRate);
-    baro.setAltitude(MY_ALTITUDE);  // Set with known altitude
+//    baro.setAltitude(MY_ALTITUDE);  // Set with known altitude
   } else {
     Serial.println(F("[%WP] MPL3115A2 is NOT connected!"));
   };
@@ -508,7 +514,8 @@ void readSensors(struct recordValues *rec) {
   if ( haveDS18 ) ds18.readAllTemps();
   
   if ( haveMPL3115 ) {
-    rec->mpl.press = baro.readPressure();   // Get MPL3115A2 data
+  // v5.3: adjust pressure for calibration and altitude
+    rec->mpl.press = baro.readPressure()+MY_ELEV_CORR+MY_CALIB_CORR;   // Get MPL3115A2 data
     rec->mpl.alt   = baro.readAltitude();
     rec->mpl.tempf  = baro.readTempF();
   }
