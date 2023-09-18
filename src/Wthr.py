@@ -1,177 +1,84 @@
-#!/usr/bin/env python
-# ========================================================
-# Name: Wthr.py
-# --------------------------------------------------------
-# Author:
-#  HDTodd based on work of prior authors,
-#  Most recently: Craig Deaton
-# --------------------------------------------------------
-# Purpose:
-#    To query and retrieve data from WeatherData.db and graph
-#    for an internval period selected by the user
-# --------------------------------------------------------
-# Environment:
-#    Runs as a Python CGI script and connects to a SQLite3 database
-# --------------------------------------------------------
-# Invocation:
-#    http://localhost/cgi-bin/Wthr.py
-# --------------------------------------------------------
-# Parameters:
-#    Form fields can be used to select past number of hours to graph
-# --------------------------------------------------------
-# Output:
-#    Generated HTML for title, form data, javascript for chart from Google Charts, and
-#    summary stats for min, max, avg temps for the selected period.  All displayed via browser
-# --------------------------------------------------------
-# Modifications:
-# Version	Date		Name	Description
-# ------------------------------------------------------------------------
-# 0001		1-Oct-2015	CD	Original script from https://github.com/Pyplate/rpi_temp_logger
-# 001	       11-Oct-2015	CD	modified script for this particular environment, pointed
-#                                       dbname to proper file name,
-# 002          23-Jan-2016      HDT     Modified for WeatherData 
-# ========================================================
+<!-- Template for a web site home page that also displays the history of
+       WeatherStation-collected data as a graph
+     Uses Google Charts for the display
+     Written by HDTodd, January, 2016; updated for DS18 temps August, 2017
+       borrowing heavily from numerous prior authors 
+     Updated 2018.09.17 for Apache 2.4.25 and to use 
+       Google AJAX JQuery API 3.3.1 (https://developers.google.com/speed/libraries/)
+-->
+<?php
+$HISTORY="'-168 hours'";	   //period of time over which to display temps
+$DB_LOC="/var/databases/"; //location of the sqlite3 db
+$DB_NAME="WeatherData.db";   //name of sqlite3 db
+?>
 
-import sqlite3
-import sys
-import cgi
-import cgitb
-import socket
+<?php
+// First, PHP code to populate an array with the [time,temp] data pairs
+//   and create a JSON array for the Javascript below
 
-# global variables
-speriod=(15*60)-1
+$db = new PDO('sqlite:' . $DB_LOC . $DB_NAME) 
+      	  or die('Cannot open database ' . $DB_NAME);
+$query = "SELECT * FROM ProbeData  WHERE date_time>datetime('now',$HISTORY)"; 
+foreach ($db->query($query) as $row) 
+  $chart_array[]=array((string)$row['date_time'],(real)$row['ds18_2_temp'],(int)$row['mpl_press']); 
+$query = "SELECT * FROM ProbeData ORDER BY date_time DESC LIMIT 1";
+foreach ($db->query($query) as $row) {
+  $last_time=(string)$row['date_time'];
+  $last_lbl1=json_encode( (string)$row['ds18_1_lbl']);
+  $last_temp1=json_encode( (real)$row['ds18_1_temp']);
+  $last_lbl2=json_encode( (string)$row['ds18_2_lbl']);
+  $last_temp2=json_encode( (real)$row['ds18_2_temp']);
+  $last_press=json_encode( (int)$row['mpl_press'] );
+}
+//Now convert to a JSON array for the Javascript
+$temp_data=json_encode($chart_array);
+//For debugging, uncomment the following
+//echo $temp_data;
+?>
 
-# -----
-# 001
-# -----
-
-
-dbname='/var/databases/WeatherData.db'
-
-# convert rows from database into a javascript table
-def create_table(rows):
-    chart_table=""
-
-    for row in rows[:-1]:
-        rowstr="['{0}', {1}],\n".format(str(row[0]),str(row[1]))
-        chart_table+=rowstr
-
-    row=rows[-1]
-    rowstr="['{0}', {1}]\n".format(str(row[0]),str(row[1]))
-    chart_table+=rowstr
-
-    return chart_table
-
-# main function
-# This is where the program starts 
-
-def main():
-
-    cgitb.enable()
-
-    # get data from the database for last 24 hours
-    # if you choose not to use the SQLite3 database, construct you record array in a similar manner to the output
-    # from the cursor fetch all rows
-    #      date-time string  temperature string \n 
-    #          and then skip the checking for len(records) and doing the chart_table function,  just call the
-    #  
-
-    conn=sqlite3.connect(dbname)
-    curs=conn.cursor()
-    option = 336
-    curs.execute("SELECT * FROM ProbeData WHERE date_time>datetime('now','-%s hours')" % option)
-    records=curs.fetchall()
-    conn.close()
-
-    # -------------------------------------
-    # print the HTTP header
-    # -------------------------------------
-    
-    print "Content-type: text/html\n\n"
-
-    # -------------------------------------
-    # convert record rows to table if anyreturned
-    # -------------------------------------
-    if len(records) != 0:
-        # convert the data into a table
-        table=create_table(records)
-    else:
-        print "No data found"
-        sys.stdout.flush()
-        return
-
-    # -------------------------------------
-    # start printing the page
-    # -------------------------------------
-    print "<html>"
- 
-    # -------------------------------------
-    # print the HTML head section
-    # -------------------------------------
-
-    print "<head>"
-    print "    <title>"
-    print "WeatherStation Data for host " + socket.gethostname()
-    print "    </title>"
-
-    # -------------------------------------
-    # format and print the graph
-    # -------------------------------------
-    # print_graph_script(table)
-
-    # google chart snippet
-    chart_code="""
+<!-- Here's the HTML code for the site, followed by the JS component for the chart -->
+<html>
+<center>
+<h1>The <?php echo gethostname() ?> Meterological Data Web Site</h1>
+<h2>Current conditions at <?php echo $last_time ?></br> 
+Temps: <?php echo $last_lbl1 ?>=<?php echo round($last_temp1,1,PHP_ROUND_HALF_UP) ?>°F and 
+<font color="blue"><?php echo $last_lbl2 ?>=<?php echo round($last_temp2,1,PHP_ROUND_HALF_UP) ?>°F</font> 
+at <font color="red">Pressure = <?php echo $last_press ?> Pa
+= <?php echo round($last_press/100000.0*29.53,2,PHP_ROUND_HALF_UP) ?> in</font></h2>
+<p>
+  <head>
+    <!--Load the AJAX API-->
     <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
     <script type="text/javascript">
       google.load("visualization", "1", {packages:["corechart"]});
       google.setOnLoadCallback(drawChart);
       function drawChart() {
-        var data = google.visualization.arrayToDataTable([
-          ['Time', 'Pressure (Pa)'],
-%s
-        ]);
-
+        var data = new google.visualization.DataTable();
+        data.addColumn("string","DateTime");
+	data.addColumn("number","Outside Temp (°F)");
+	data.addColumn("number","Pressure (Pa)");
+        data.addRows( <?php echo $temp_data ?>);
         var options = {
-          title: 'Pressure (Pa)'
+          title: 'Outside Temp and Barometric Pressure History',
+	  series: {
+	    0: {targetAxisIndex: 0},
+	    1: {targetAxisIndex: 1}
+	  },
+	  vAxes: {
+	    0: {title: 'OU Temp (°F)'},
+	    1: {title: 'Pressure (Pa)'}
+	  }  
         };
-
         var chart = new google.visualization.LineChart(document.getElementById('chart_div'));
         chart.draw(data, options);
       }
-    </script>"""
-
-    print chart_code % (table)
-    print "</head>"
-
-    # ---------------------------------------
-    # print the page body
-    # ---------------------------------------
-
-    print "<body>"
-    print "<h1>'" + socket.gethostname() + "' WeatherStation Data Log</h1>"
-    print "<hr>"
-
-
-
-    # ------------------------------------
-    # show_graph()
-    # ------------------------------------
-
-    # print the div that contains the graph
-    print "<h2>Barometric Pressure Chart</h2>"
-    print '<div id="chart_div" style="width: 900px; height: 500px;"></div>'
-
-   
-    print "<hr>"
- 
-    print "</body>"
-    print "</html>"
-
-    conn.close()
-
-    sys.stdout.flush()
-
-if __name__=="__main__":
-    main()
-
-
+    </script>
+  </head>
+  <body>
+    <!--Div that will hold the line graph-->
+    <div id="chart_div" style="width: 900px; height: 500px;"></div>
+  </body>
+</center>
+</html>
