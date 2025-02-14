@@ -57,9 +57,9 @@ tftTYPE  findTFT(void);
                               // SCL to Uno SCL
                               // SDA to Uno SDA
 uint8_t sampleRate=S_128;     // Sample 128 times for each MPL3115A2 reading
-#define MY_ALTITUDE 151       // Set this to your actual GPS-verified altitude in meters
+#define MY_ALTITUDE 169       // Set this to your actual GPS-verified altitude in meters
                               // if you want altitude readings to be corrected
-                              // Bozeman, MT = 1520m, Williston VT = 151m
+                              // Bozeman, MT = 1520m, Williston VT = 169m
 #define MY_ELEV_CORR 18.0*100 // millibars-> Pascals, From Table 2,
                               //   https://www.starpath.com/downloads/calibration_procedure.pdf
 #define MY_CALIB_CORR 3.5*100 // millibars-> Pascals, calibrated for my MPL: replace with yours
