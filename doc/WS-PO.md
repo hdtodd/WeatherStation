@@ -3,9 +3,9 @@
 
 *WeatherProbe* (WP) is a program that runs on the Arduino single-board microcontroller to manage and read data from various meterological sensors.  *WeatherStation* (WS) is a program that runs on the Raspberry Pi or other Linux/Macintosh system to store that meterological data and report or present it. They are the Arduino and Raspberry Pi software components, respectively, of a meterological station *system*. They work together to collect+display (Arudino) and record+present (Pi) meterological data from a set of sensors connected to the Arduino. This document describes the operation of that system -- how the individual components function and how they function as a system.  This PO manual may help others add components to the Arduino or functionality to the system.
 
-#Basic Operation
+# Basic Operation
 
-##System Data Flow
+## System Data Flow
 The WS program on the Raspberry Pi/Linux controller manages the WP probe program on the Arduino over the USB serial port that connects the two (and powers the Arduino).  In response to commands coming over the USB serial port from WS on the Pi, the WP program performs actions, including sampling of data from its sensors, and reports the results via the USB serial connection back to the WS program if it has been commanded to do so.  
 
 The WS program then performs the reporting action *it* was commanded to do at startup.  WS reporting options include:
@@ -18,11 +18,11 @@ Operating independently, an Apache web page with PHP code can be used to access 
 
 The WP program primarily performs actions only in response to WS commands over the USB serial port.  The exception is that it periodically (default 1 minute) samples the sensors and updates the TFT display, if there is one, with current conditions.
 
-##WeatherProbe (WP -- Arudino Code)
+## WeatherProbe (WP -- Arudino Code)
 
 Arduino code has two major procedures as the main program: setup() and loop().  One-time initialization tasks are performed in setup(), and the program then enters loop(), which executes repeatedly until powerdown or restart.
 
-###Startup
+### Startup
 Upon upload, powerup, or restart, the WP code in the setup() procedure in the Aruindo:
 
 1. Initializes the USB Serial port (default 9600 baud)
@@ -36,7 +36,7 @@ Upon upload, powerup, or restart, the WP code in the setup() procedure in the Ar
 
 There is no "exit" from this code.  Once it has initialized in setup(), it enters the loop() procedure and loops until it receives a command to `restart`, at which point it simply restarts the process from step 1 above, or until the Arduino is reloaded or powered down.
 
-###Device Support on the Arduino
+### Device Support on the Arduino
 WP has support for the following devices connected to the Arduino:
 
 1. Chronodot real-time-clock, connected via I2C 
@@ -52,7 +52,7 @@ If a TFT display is present, it is used to show the date-time stamp of the lates
 
 If any of the other devices is absent or not sensed correctly, its absence is reported at startup over the USB serial port and it is marked absent internally.  No further attempt is made to gather data from that device, and any reported values are reported as zeros.
 
-###WP Commands
+### WP Commands
 Command processing within WP is very restricted.  The command processor does not handle line editing such as backspace character deletion or line deletion.  Input that is not recognized as a correctly-formed command is discarded: the complete line is ignored, no action is taken, and a prompt is sent over the USB serial line to indicate the commands WP is prepared to process (equivalent to having sent a "?" or "help" command).
 
 WP commands include the following set:
@@ -68,7 +68,7 @@ WP commands include the following set:
 </br>**restart**</br>causes the Arduino to reboot and restart WP.</br>
 
 
-###WP Device Details
+### WP Device Details
 
 Most of the devices supported by WP are straightforward: one device, one connection, one set of data per sampling.  The exception is the DS18-class thermal sensors connected via OneWire: there may be many DS18 devices (limit of 4 as compiled).
 
@@ -80,7 +80,7 @@ The SainSmart 1.8" TFT LCD display is a color 128x160-pixel display connected vi
 </br>**DHT22**</br>The DHT22 device senses temperature and relative humidity.  No settings or adjustments are possible.  During sampling, WP simply requests current values for temperature and relative humidity.  A DHT11 or DHT21 device may also be used (compile-time parameter).</br>
 </br>**DS18B20**</br>The DS18B20 is one specific example of the OneWire DS18-class thermal sensors, and it is the device with which WP was developed.  WP *should* support the other DS18 devices (DS18S20, DS1822, DS18B20) with no code changes or recompilation required, but it should be validated with other devices before putting into production.</br></br>WP samples the two-character DS18 device label along with the temperature and reports those pairs for all connected devices to the controlling program or terminal.  WP assumes that the 2-byte Tl/Th (low/high temperature trigger settings) that are stored in DS18 EEPROM are two-character labels. (The DS18 github distribution includes a DS18 labeling program, but two bytes of the OneWire address might be used as an alternative, with minor coding changes, with some chance that labels wouldn't be unique).  Absent devices are reported as a (label,temp) pair value of ('\*\*',0.0)</br></br>By default, temperatures are measured with 10-bit precision to 0.25C (compilation parameter).</br></br>WP uses the  concurrent-sampling capability of the DS18 device: sampling is initiated concurrently across *all* DS18's, data is collected from other sensors, and then data is collected from the DS18's.  This sampling parallelism speeds up the sampling loop considerably if multiple DS18s are attached.  **As a result, the DS18's must be connected to VCC for power and cannot operate in parasitic mode.**
 
-###WP Report Strings
+### WP Report Strings
 WP reports sample results, if commanded to do so, as either line-printer style reports (labeled data values), csv-formatted lines (no labels), or as XML-formatted data.
 <p style="margin-left:40px">**report**</br>Samples are reported as one line returned with labeled data in the format:
 <p style="margin-left:60px">`2017-09-18 16:46:59  MPL: Altitude=1650.9m Pressure=83661Pa`</br>`Temp=69.8F  DHT22: Temp=70.5F @ 35% RH  DS18: IN=70.7F OU=58.1F`</br>`**=00.0F  **=00.0F    Loop time: 1437 s`</br>
@@ -103,7 +103,7 @@ WP reports sample results, if commanded to do so, as either line-printer style r
 <p style="margin-left:40px">
 **xml**</br>Sample data, in the order listed for `csv`, are reported in conformance with the XML DTD template provided with the source code (weather_data.dtd: see Appendix).  Each sampling is marked by a \<sample\>\</sample\> begin-end pair and includes the date-time stamp and all available data in the sample, labeled and with units specified.</br>
 
-###WP Error Processing
+### WP Error Processing
 The WP code compiles to nearly 32K, and there is little room for additional functionality or error detection.  Attempts are made to report most errors that can WP detect, but the code is not "bullet proof".  Error and warning messages are sent over the USB serial line:
 
 * Informational and warning messages are preceeded by the text string "[%WP]""
@@ -111,11 +111,11 @@ The WP code compiles to nearly 32K, and there is little room for additional func
 
 A program controlling the Arduino running WP via the USB serial port can use these leading text string to identify messages that should be sent to a controlling terminal screen and/or logged to an error file.
 
-##WeatherStation (WS -- Raspberry Pi/Linux Code)
+## WeatherStation (WS -- Raspberry Pi/Linux Code)
 
 The WS program executes on a Raspberry Pi or other Linux/Mac OSX system to collect and record data from the Arduino weather probe program, WP, over the USB serial connection between the Pi and and Arduino.
 
-###Startup
+### Startup
 
 WS starts by 
 
@@ -126,14 +126,14 @@ WS starts by
 
 WS then enters a loop in which it commands the Arudino to sample data from the Arduino's sensors, receives the sample data in reply, records or prints that data as requested, then delays (default 5 minutes) before repeating.  This continues until the program is terminated.
 
-###WS Device Support
+### WS Device Support
 
 WS was designed to connect to a single Arduino Uno via USB serial port, and it was tested only in that mode.  However, other modes of operation should be possible with relatively minor modifications or additions to the WS code:
 
 * Serial connection might be made by other means, such as Bluetooth Serial or WiFi or Pi/Arduino serial ports.  A wireless connection to a remote Arduino would be one of the more interesting and useful approaches and should be relatively easy to implement.
 * Multiple Arduinos could be supported from one instance of WS, or by running multiple instances, each connecting through different serial connections to different Arduinos.
 
-###WS Commands
+### WS Commands
 
 WS is not an interactive program.  It accepts one of three commands on the command line at startup and continues operation until terminated: 
 
@@ -146,7 +146,7 @@ Any other argument on the command line, or no argument on the command line, resu
 WS can be terminated with a CNTL-C (^C) from the controlling terminal or stopped with the command `sudo systemctl stop WeatherStation.service` if WS is operating as a `systemd` service.  As a result, the XML file is properly closed with `</sample>` under normal circumstances (but check and append that closing string to the .xml file if the system has crashed in a power failure).
 
 
-###WS Databases
+### WS Databases
 
 WS can record the date-time stamped sample data it receives from WP in either a sqlite3 (default) or MySQL database.
 
@@ -216,7 +216,7 @@ Create the database and table with the command:
 
 In operation, WS again opens and closes database access just to record data: the connection to the database is not kept open during operation.
 
-###WS Error Processing
+### WS Error Processing
 
 There is limited error handling in WP, but WS reports the errors that occur in its side of the processing and forwards the error messages it receives from WP.  Nevertheless, the code is not "bullet proof", particularly with regard to errors that might occur in the communication between the Raspberry Pi and the Arduino.  However, the USB serial connection appears to be very stable and reliable, running for months at a time without disruption.
 
@@ -233,7 +233,7 @@ Informational messages from WP and error messages from both WS and WP are printe
 
 
 
-##Appendix:  weather_data.dtd
+## Appendix:  weather_data.dtd
 The listing below is the DTD template to which the WP xml output conforms.  XML output files can be validated or converted to CSV format with tools supplied with the WS/WP source code.
 
 	<!ELEMENT samples (sample*)>
