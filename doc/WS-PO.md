@@ -1,5 +1,5 @@
-#<center>WeatherProbe/WeatherStation</br>Principles of Operation
-###<center>[H. David Todd](hdtodd@gmail.com), January, 2018</center></br>
+# <center>WeatherProbe/WeatherStation</br>Principles of Operation
+### <center>[H. David Todd](hdtodd@gmail.com), January, 2018</center></br>
 
 *WeatherProbe* (WP) is a program that runs on the Arduino single-board microcontroller to manage and read data from various meterological sensors.  *WeatherStation* (WS) is a program that runs on the Raspberry Pi or other Linux/Macintosh system to store that meterological data and report or present it. They are the Arduino and Raspberry Pi software components, respectively, of a meterological station *system*. They work together to collect+display (Arudino) and record+present (Pi) meterological data from a set of sensors connected to the Arduino. This document describes the operation of that system -- how the individual components function and how they function as a system.  This PO manual may help others add components to the Arduino or functionality to the system.
 
