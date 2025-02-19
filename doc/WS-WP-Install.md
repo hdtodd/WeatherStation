@@ -92,13 +92,13 @@ See the Fritzing circuit diagram (`WS_Probe.fzz` or `WS_Probe.pdf`) for details,
 
 Again, missing devices are ignored by the program.  For those devices you do have, the program pin assignments are as follow:
 
-### Chronodot Real-Time-Clock
+#### Chronodot Real-Time-Clock
 *  VCC to Arduino 5v
 *  GND to Arduino GND
 *  SCL to Arduino pin 13
 *  SDA to Arduino pin 11
 
-### TFT pin definitions for Sainsmart 1.8" TFT SPI </br>on the Arduino
+#### TFT pin definitions for Sainsmart 1.8" TFT SPI </br>on the Arduino
 *	 TFT VCC to Arduino 5v
 *  TFT GND to Arduino GND
 *  TFT SCL to Arduino pin 13
@@ -109,19 +109,19 @@ Again, missing devices are ignored by the program.  For those devices you do hav
 *  Arduino RESET to Arduino pin 7 (to enable TFT hardware reset on restart command)
 
 
-### DS18 pin definitions
+#### DS18 pin definitions
 *  VCC to Arduino 5v (We use powered rather than parasitic mode, so VCC is needed)
 *  GND to Arduino GND
 *  Data wire to Arduino pin 5 with 4K7 Ohm pullup to VCC 5V
 
 
-### DHT22 pin definitions
+#### DHT22 pin definitions
 *	 VCC to Arduino 5v
 *	 GND to Arduino GND
 *	 Data pin to Arduino pin 2 with 10K pullup to VCC 5v
 
 
-### MPL3115A2 pin definitions
+#### MPL3115A2 pin definitions
 *	 VCC to Arduino 5v
 *  GND to Arduino GND
 *  SCL to Arduino SCL
