@@ -98,14 +98,14 @@ Again, missing devices are ignored by the program.  For those devices you do hav
 *  SCL to Arduino pin 13
 *  SDA to Arduino pin 11
 
-#### TFT pin definitions for Sainsmart 1.8" TFT SPI </br>on the Arduino
-*	 TFT VCC to Arduino 5v
+#### TFT pin definitions for Sainsmart 1.8" TFT SPI on the Arduino
+*  TFT VCC to Arduino 5v
 *  TFT GND to Arduino GND
 *  TFT SCL to Arduino pin 13
 *  TFT SDA to Arduino pin 11
 *  TFT CS to Arduino pin 10
-*	 TFT RS/DC to Arduino pin 9
-*	 TFT Reset to Arduino pin 8
+*  TFT RS/DC to Arduino pin 9
+*  TFT Reset to Arduino pin 8
 *  Arduino RESET to Arduino pin 7 (to enable TFT hardware reset on restart command)
 
 
@@ -116,17 +116,16 @@ Again, missing devices are ignored by the program.  For those devices you do hav
 
 
 #### DHT22 pin definitions
-*	 VCC to Arduino 5v
-*	 GND to Arduino GND
-*	 Data pin to Arduino pin 2 with 10K pullup to VCC 5v
+*  VCC to Arduino 5v
+*  GND to Arduino GND
+*  Data pin to Arduino pin 2 with 10K pullup to VCC 5v
 
 
 #### MPL3115A2 pin definitions
-*	 VCC to Arduino 5v
+*  VCC to Arduino 5v
 *  GND to Arduino GND
 *  SCL to Arduino SCL
-*	 SDA to Arduino SDA
-
+*  SDA to Arduino SDA
 
 ## WeatherStation (WS)
 
