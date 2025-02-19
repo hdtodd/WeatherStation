@@ -223,7 +223,10 @@ You can use `make clean` from the `WeatherStation/src` directory to remove const
 
 To remove WS from `/usr/local/bin` and stop, disable, and remove WeatherStation.service to prevent it from restarting upon a Pi reboot, use `sudo WeatherStation/src/make uninstall`.
 
-# Appendix -- minicom setup
+## Author
+H. David Todd, hdtodd@gmail.com, January, 2018
+
+## Appendix -- minicom setup
 
 If you use minicom to test `WP` on the Arduino from a host program, you'll need to set up the minicom configuration.  You can type `minicom -s` and set parameters as below, or you can create/edit the file `/etc/minicom/minicom.dfl`,
 
@@ -247,11 +250,7 @@ Note the use of the character translation table, miniconv.tbl.  Minicom and WP r
 1. Type `B` to save the table and save it as `/etc/minicom/miniconv.tbl`.
 1. ESC and exit from `minicom`.  You're done.
 
-## Author
-H. David Todd, hdtodd@gmail.com, January, 2018
-
-
-#Appendix -- arduino.mk Makefile
+## Appendix -- arduino.mk Makefile
 
 	$cat WP/Makefile 
 	ARDUINO_LIBS  = TFT SPI I2C OneWire ChronodotI2C MPL3115A2 DHT DS18
