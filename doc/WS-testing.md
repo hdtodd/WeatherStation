@@ -2,11 +2,11 @@
 
 Create the WeatherStation executable (filename 'ws') by connecting to the '.../src' directory and issuing the command `make`.  Then issuing the command `./ws ?` generates the output 
 
-	WeatherStation v5.1: program to collect and record meteorological data
+	WeatherStation v5.3: program to collect and record meteorological data
 	ws <mode> where <mode> = prt | sql | xml
 	
 
-So `./ws prt` collects data from the Arduino weather probe at regular intervals (compile-time parameter set at 60 seconds as distributed) and generates to the controlling terminal a nicely-formatted report of the data.  And `./ws prt > myreport.rpt` generates that report to the file myreport.rpt.
+So `./ws prt` collects data from the Arduino weather probe at regular intervals (compile-time parameter set at 300 seconds as distributed) and generates to the controlling terminal a nicely-formatted report of the data.  And `./ws prt > myreport.rpt` generates that report to the file myreport.rpt.
 
 Similarly, `./ws xml` generates an xml-formatted report to the terminal, and `./ws xml > live-data.xml` generates that report to the file live-data.xml.  [This package includes xml tree-parsing routines that will display the xml data elements or convert the data to comma-separated-variable, csv, format.]
 
