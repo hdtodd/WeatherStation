@@ -1,11 +1,15 @@
-#<center>WeatherProbe/WeatherStation</br>Installation Guide
-###<center>[H. David Todd](hdtodd@gmail.com), January, 2018</center></br>
+# WeatherProbe/WeatherStation</br>Installation Guide
 
-*WeatherProbe* (WP) is a program that runs on the Arduino single-board microcontroller to read data from various meterological sensors and display current conditions on a TFT LCD display, if one is connected.  *WeatherStation* (WS) is a program that runs on the Raspberry Pi or other Linux/Macintosh system to collect that meterological data from WP and to store and report or present it via web page. They are the Arduino and Raspberry Pi (or "Pi" for short) software components, respectively, of a meterological station *system*. They work together to collect+display (Arudino) and record+present (Pi) meterological data from a set of sensors connected to the Arduino. This document describes the installation of the programs and some of the compilation parameters that can be used to tailor their operation.
 
-#Quickstart
+**WeatherProbe** (WP) is a program that runs on the Arduino single-board microcontroller to read data from various meterological sensors and display current conditions on a TFT LCD display, if one is connected.  
 
-After all of the software components have been installed and the Arduino has been connected to the Pi, a simple `make; sudo make install` will cause the system to begin collecting meteorological data into a sqlite3 table `ProbeData`, in the file `/var/databases/WeatherData.db`.
+**WeatherStation** (WS) is a program that runs on the Raspberry Pi or other Linux/Macintosh system to collect that meterological data from WP and to store and report or present it via web page. 
+
+They are the Arduino and Raspberry Pi (or "Pi" for short) software components, respectively, of a meterological station *system*. They work together to collect+display (Arudino) and record+present (Pi) meterological data from a set of sensors connected to the Arduino. This document describes the installation of the programs and some of the compilation parameters that can be used to tailor their operation.
+
+## Quickstart
+
+After all of the software components have been installed and the Arduino has been connected to the Pi, a simple </br>`make; sudo make install` </br>will cause the system to begin collecting meteorological data into a sqlite3 table `ProbeData`, in the file `/var/databases/WeatherData.db`.
 
 The system will collect data even if you have no sensors, no TFT display, and no real-time-clock connected to the Arduino!  You'll get records with a date-time stamp based on the date-time of your controlling Pi and with zeros for the rest of the data.  That's an easy way to test your software setup before you wire in sensors.  Then power-off and add the sensors, display, or real-time clock that you do have available and restart: the system will append real data to your database table.
 
@@ -57,16 +61,16 @@ Here are the steps:
 1. To avoid destroying a functioning web site, the installation procedure does not automatically install the PHP code needed by Apache2 to display accumulated weather data.  Read the `WeatherStation/src/Makefile` for instructions for manual installation.
 
 
-#Detailed Instructions
+# Detailed Instructions
 
-##WeatherProbe (WP)
+## WeatherProbe (WP)
 
 WeatherProbe is an Arduino .ino program -- essentially C++ with some constraints and with support for the Arduino devices.  WeatherStation is a C program.  Both programs are compiled and linked on the host system.  
 
-The "host" is referenced here as a Raspberry Pi, but it could be any other Linux or Mac OSX system that offers the Arduino IDE environment.  The installation procedure in `Makefile` assumes that the host is a Pi running systemd.  That procedure may succeed on other Linux systems, but you'll need to perform equivalent steps manually if you're running on OSX.
+The "host" is referenced here as a Raspberry Pi, but it could be any other Linux or Mac OSX system that offers the Arduino IDE environment.  The installation procedure in `Makefile` assumes that the host is a Pi running `systemd`.  That procedure may succeed on other Linux systems, but you'll need to perform equivalent steps manually if you're running on OSX.
 
 
-The Arduino program is compiled and linked on the host to create a binary file that is executable by the Arduino.  The Arduino binary code is uploaded to the Arduino over the USB serial port *and stays resident and active until replaced, even through power cycling*.
+The Arduino program is compiled and linked on the host to create a binary file that is executable by the Arduino.  The Arduino binary code is uploaded to the Arduino over the USB serial port **and stays resident and active until replaced, even through power cycling**.
 
 WP supports several sensor devices, but if any are absent, WP collects and reports data from whatever sensors it *does* see.  WP will use a Chronodot real-time clock (I2C-connected, 1307-based RTC) if one is installed. But if no Chronodot is present, WP will use the Arduino's internal timer, with current date-time set by command from the controlling computer.  As a result, WP will operate and present results (with zeros for missing sensors) with no connected devices.
 
@@ -82,56 +86,56 @@ If you want to compile and upload the WP code into the Arduino without running W
 
 assuming that you're using `minicom` for communication between your host Pi and the probe.  Once the code is uploaded, it will announce itself over the USB connection, inform you of any missing sensors, and then await commands over the USB port.  `?` or `help` will give a list of commands to try.  A simple example would be to type `report` and then `sample` to show you the datetime stamp and readings from any connected sensors.  WP does not support editing of command lines typed, so you can't correct typing mistakes.  Just press RETURN and start a new command line.
 
-##Connecting the Arduino to Devices
+## Connecting the Arduino to Devices
 
 See the Fritzing circuit diagram (`WS_Probe.fzz` or `WS_Probe.pdf`) for details, and check or edit `WP.h` to review and/or change the pin assignments on the Arduino.  Those assignments are for the Uno R3: you may need to change pin assignments on other models.
 
 Again, missing devices are ignored by the program.  For those devices you do have, the program pin assignments are as follow:
 
-###Chronodot Real-Time-Clock
-*	VCC to Arduino 5v
-* 	GND to Arduino GND
-*  	SCL to Arduino pin 13
-*	SDA to Arduino pin 11
+### Chronodot Real-Time-Clock
+*  VCC to Arduino 5v
+*  GND to Arduino GND
+*  SCL to Arduino pin 13
+*  SDA to Arduino pin 11
 
-###TFT pin definitions for Sainsmart 1.8" TFT SPI on the Arduino
-*	TFT VCC to Arduino 5v
-* 	TFT GND to Arduino GND
-*  	TFT SCL to Arduino pin 13
-*	TFT SDA to Arduino pin 11
-* 	TFT CS to Arduino pin 10
-*	TFT RS/DC to Arduino pin 9
-*	TFT Reset to Arduino pin 8
-* 	Arduino RESET to Arduino pin 7 (to enable TFT hardware reset on restart command)
-
-
-###DS18 pin definitions
-*	VCC to Arduino 5v (We use powered rather than parasitic mode, so VCC is needed)
-* 	GND to Arduino GND
-*  	Data wire to Arduino pin 5 with 4K7 Ohm pullup to VCC 5V
+### TFT pin definitions for Sainsmart 1.8" TFT SPI </br>on the Arduino
+*	 TFT VCC to Arduino 5v
+*  TFT GND to Arduino GND
+*  TFT SCL to Arduino pin 13
+*  TFT SDA to Arduino pin 11
+*  TFT CS to Arduino pin 10
+*	 TFT RS/DC to Arduino pin 9
+*	 TFT Reset to Arduino pin 8
+*  Arduino RESET to Arduino pin 7 (to enable TFT hardware reset on restart command)
 
 
-###DHT22 pin definitions
-*	VCC to Arduino 5v
-*	GND to Arduino GND
-*	Data pin to Arduino pin 2 with 10K pullup to VCC 5v
+### DS18 pin definitions
+*  VCC to Arduino 5v (We use powered rather than parasitic mode, so VCC is needed)
+*  GND to Arduino GND
+*  Data wire to Arduino pin 5 with 4K7 Ohm pullup to VCC 5V
 
 
-###MPL3115A2 pin definitions
-*	VCC to Arduino 5v
-* 	GND to Arduino GND
-* 	SCL to Arduino SCL
-*	SDA to Arduino SDA
+### DHT22 pin definitions
+*	 VCC to Arduino 5v
+*	 GND to Arduino GND
+*	 Data pin to Arduino pin 2 with 10K pullup to VCC 5v
 
 
-##WeatherStation (WS)
+### MPL3115A2 pin definitions
+*	 VCC to Arduino 5v
+*  GND to Arduino GND
+*  SCL to Arduino SCL
+*	 SDA to Arduino SDA
+
+
+## WeatherStation (WS)
 
 The file `WS.h` documents parameters you might want to change to affect the routine operation of WS, such as the frequency of collection of data from the probe.  
 
 The most significant compilation option for WS is the choice of database for storing the collected data. In operation, the probe can be commanded to present its results in a labeled-text report style, as a comma-separated-variable (CSV) string suitable for processing into spreadsheets or SQL databases, or in XML format.  WeatherStation commands WP to present data in CSV format and then stores the results into a SQL database.  In the distributed version of WS, you can choose to use either sqlite3 or MySQL as the database for storage.
 
 
-###Database Options
+### Database Options
 
 WS can record the date-time stamped sample data it receives from WP in either a sqlite3 (default) or MySQL database.  
 
@@ -139,11 +143,11 @@ Use of sqlite3 has the advantage that WS creates the database file and table aut
 
 The PHP code that can be used as a model for a web reporting page assumes the use of a sqlite3 database file in `/var/databases`: you'll need to modify that code if you choose to use MySQL.
 
-</br>**sqlite3 Database Setup**</br>
+#### sqlite3 Database Setup
 
-The sqlite3 database file name, by default in the code, is `~/WeatherData.db` so that it can be created and written to by the user during initial testing.   But in Makefile, that definition is overridden and the database filename is set to be `/var/databases/WeatherData.db` so that the system is set up for production operation.  **Note that that file will normally be protected, so either WS must run as root (or as a systemd service) or the file must be created and protections set to enable writing by the user.**
+The sqlite3 database file name, by default in the code, is `~/WeatherData.db` so that it can be created and written to by the user during initial testing.   But in Makefile, that definition is overridden and the database filename is set to be `/var/databases/WeatherData.db` so that the system is set up for production operation.  **Note that that file will normally be protected, so either WS must run as root (or as a `systemd` service) or the file must be created and protections set to enable writing by the user.**
 
-On startup, if the sqlite3 database *file* `/var/databases/WeatherData.db` doesn't exist, WS creates it (if permissions allow; if this fails, check permissions and/or run as `sudo`).  The sqlite3 code uses a table named `Probedata` in that database file.  Again, if it doesn't exist in the file, WS creates it with the command:
+On startup, if the sqlite3 database file `/var/databases/WeatherData.db` doesn't exist, WS creates it (if permissions allow; if this fails, check permissions and/or run as `sudo`).  The sqlite3 code uses a table named `Probedata` in that database file.  Again, if it doesn't exist in the file, WS creates it with the command:
 
 	CREATE TABLE if not exists ProbeData (date_time TEXT PRIMARY KEY,
 	mpl_press INT, mpl_temp REAL, dht22_temp REAL, dht22_rh INT,
@@ -170,14 +174,14 @@ The sqlite3 database can be examined as a normal sqlite3 database table, for exa
 	2017-09-19 08:12:07|83813|65.6|66.4|37|IN|69.8|OU|36.0|**|0.0|**|0.0
 	sqlite> .quit
 
-</br>**MySQL Database Setup**</br>
+####  MySQL Database Setup
 
 
 Operation of WS using a MySQL is very similar to its operation using sqlite3.  However, the setup is a bit more complicated:
 
-* mysql server must be running (generally done as a startup service, likely with systemctl)
-* username and password for a MySQL account that can append data to the database table must have been provided (edit WS.h, `make clean` and recompile with `USE_MYSQL=1 make`)
-* A `weather` database and `Probedata` table in that database must have been created under that user account with the correct field names and data types, per installation instructions.
+*  mysql server must be running (generally done as a startup service, likely with systemctl)
+*  username and password for a MySQL account that can append data to the database table must have been provided (edit WS.h, `make clean` and recompile with `USE_MYSQL=1 make`)
+*  A `weather` database and `Probedata` table in that database must have been created under that user account with the correct field names and data types, per installation instructions.
 
 Create the database and table with the command:
 	
@@ -187,7 +191,7 @@ Create the database and table with the command:
 	use weather;
 	CREATE TABLE `ProbeData` (
   		`date_time` datetime NOT NULL,
-		`mpl_press` int(6) unsigned NOT NULL,
+		  `mpl_press` int(6) unsigned NOT NULL,
   		`mpl_temp` float NOT NULL,
   		`dht22_temp` float NOT NULL,
   		`dht22_rh` smallint(5) unsigned NOT NULL,
@@ -208,13 +212,13 @@ At this point, you'll have an empty table, `ProbeData`, in a database `weather` 
 
 But if you've compiled WS with the MySQL username/password set and using the `make` commands `make clean; USE_MYSQL=1 make`, you're ready for operation.  
 
-</br>**Both SQL Options**</br>
+#### Both SQL Options
 
 Whether you've chosen to run with sqlite3 or with MySQL, if you start WS with `sudo ./ws sql`, it will now append the meterological data it receives from the Arduino WP program to the sqlite3 or MySQL table using an `insert` command string in the sqlite3 example above.  And, again, you can examine that data using sqlite3 or MySQL commands similar to the sqlite3 command examples given above.
 
 If you move your newly-compiled version of `ws` to `/usr/local/bin` and install the `systemctl` links with `make install`, your sqlite3 or MySQL version of `ws` will begin autonomous operation to collect and archive meterological data to its SQL table, and it will restart automatically when you reboot your system.
 
-##Uninstall##
+## Uninstall
 
 You can use `make clean` from the `WeatherStation/src` directory to remove construction debris from the `make` commands.  
 
@@ -245,6 +249,9 @@ Note the use of the character translation table, miniconv.tbl.  Minicom and WP r
 1. Type `13` to say you want to edit character 13 (the CR character); leave input to be `13` by pressing return; change output to be `10` (the LF character) and press return
 1. Type `B` to save the table and save it as `/etc/minicom/miniconv.tbl`.
 1. ESC and exit from `minicom`.  You're done.
+
+## Author
+H. David Todd, hdtodd@gmail.com, January, 2018
 
 
 #Appendix -- arduino.mk Makefile
