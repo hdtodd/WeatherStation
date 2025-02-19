@@ -1,4 +1,4 @@
-#Testing WS
+# Testing WS
 
 Create the WeatherStation executable (filename 'ws') by connecting to the '.../src' directory and issuing the command `make`.  Then issuing the command `./ws ?` generates the output 
 
