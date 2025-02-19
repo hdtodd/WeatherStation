@@ -224,7 +224,7 @@ You can use `make clean` from the `WeatherStation/src` directory to remove const
 To remove WS from `/usr/local/bin` and stop, disable, and remove WeatherStation.service to prevent it from restarting upon a Pi reboot, use `sudo WeatherStation/src/make uninstall`.
 
 ## Author
-H. David Todd, hdtodd@gmail.com, January, 2018
+H. David Todd, hdtodd@gmail.com, January, 2018; reformatted February, 2025
 
 ## Appendix -- minicom setup
 
